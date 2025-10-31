@@ -4,106 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TSUGIMI - ツヤ膜ラッピング シャンプー</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="logo">TSUGIMI</div>
-        <nav class="desktop-nav">
-            <a href="#concept">CONCEPT</a>
-            <a href="#product">PRODUCT</a>
-            <a href="#topics">TOPICS</a>
-            <a href="#shop">SHOP LIST</a>
-            <a href="#faq">FAQ</a>
-        </nav>
-        <button class="mobile-menu-btn" aria-label="メニュー">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-    </header>
-
-    <main class="hero">
-        <!-- Three.js Canvas for 3D Background -->
-        <div id="three-container"></div>
+    <!-- 3D Canvas Background -->
+    <div id="canvas-container"></div>
+    
+    <!-- Content -->
+    <div class="content">
+        <header class="header">
+            <div class="logo">TSUGIMI</div>
+        </header>
         
-        <div class="hero-content">
-            <div class="text-section">
-                <p class="catchphrase">第2のキューティクル※へ</p>
-                <h1 class="main-title">
-                    ツヤ膜ラッピング<br>
-                    シャンプー
-                </h1>
-                <div class="brand-name">
-                    <span class="brand-large">TSUGIMI</span>
-                    <span class="brand-small">ツギミ</span>
+        <main class="hero">
+            <div class="hero-text">
+                <p class="subtitle">第2のキューティクル<sup>※</sup>へ</p>
+                <h1 class="title">ツヤ膜ラッピング<br>シャンプー</h1>
+                <div class="note">
+                    <p>※ツヤ膜成分が髪を包み込みます</p>
                 </div>
             </div>
-            
-            <div class="products-section">
-                <div class="bottle bottle-1" data-speed="1.5">
-                    <div class="bottle-inner">
-                        <div class="bottle-top"></div>
-                        <div class="bottle-body">
-                            <div class="holographic-overlay"></div>
-                            <div class="bottle-label">
-                                <span class="label-brand">TSUGIMI</span>
-                                <span class="label-text">WRAPPING MOIST<br>SHAMPOO</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bottle bottle-2" data-speed="2">
-                    <div class="bottle-inner">
-                        <div class="bottle-top"></div>
-                        <div class="bottle-body">
-                            <div class="holographic-overlay"></div>
-                            <div class="bottle-label">
-                                <span class="label-brand">TSUGIMI</span>
-                                <span class="label-text">WRAPPING CONTROL<br>SHAMPOO</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bottle bottle-3" data-speed="1.8">
-                    <div class="bottle-inner">
-                        <div class="bottle-top"></div>
-                        <div class="bottle-body small">
-                            <div class="holographic-overlay"></div>
-                            <div class="bottle-label">
-                                <span class="label-brand">TSUGIMI</span>
-                                <span class="label-text">HAIR OIL</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bottle bottle-4" data-speed="2.2">
-                    <div class="bottle-inner">
-                        <div class="bottle-top"></div>
-                        <div class="bottle-body jar">
-                            <div class="holographic-overlay"></div>
-                            <div class="bottle-label">
-                                <span class="label-brand">TSUGIMI</span>
-                                <span class="label-text">SERUM<br>HAIRMASK</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="scroll-indicator">SCROLL DOWN</div>
-        
-        <footer class="hero-footer">
-            ※ 傷部分を守る被膜としてコーティングすること
-        </footer>
-    </main>
+        </main>
+    </div>
 
     <!-- Three.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="script.js"></script>
+    
+    <!-- Main Script -->
+    <script src="main.js"></script>
 </body>
 </html>
