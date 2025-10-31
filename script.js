@@ -1,4 +1,4 @@
-// Animated Gradient Background
+// Animated Gradient Background with Holographic Bubble
 class GradientBackground {
     constructor(canvas) {
         this.canvas = canvas;
@@ -26,74 +26,196 @@ class GradientBackground {
         });
     }
     
-    createGradient() {
-        const gradient = this.ctx.createLinearGradient(
-            0, 
-            0, 
+    createComplexGradient() {
+        // Multiple radial gradients for depth
+        const gradients = [];
+        
+        // Base gradient - top left to bottom right
+        const baseGradient = this.ctx.createLinearGradient(
+            0, 0, 
             this.canvas.width, 
             this.canvas.height
         );
         
-        // Time-based color shifts
-        const t = this.time * 0.0002;
-        const mouseInfluence = 0.1;
+        const t = this.time * 0.0001;
         
-        // Color stops with animation
-        const color1 = {
-            r: 240 + Math.sin(t) * 10,
-            g: 220 + Math.sin(t + 1) * 15,
-            b: 235 + Math.sin(t + 2) * 10
-        };
+        // Complex color mixing
+        baseGradient.addColorStop(0, `rgba(245, 232, 245, ${0.9 + Math.sin(t) * 0.1})`); // Light pink-purple
+        baseGradient.addColorStop(0.3, `rgba(232, 216, 240, ${0.85})`); // Lavender
+        baseGradient.addColorStop(0.6, `rgba(216, 232, 248, ${0.8})`); // Light blue
+        baseGradient.addColorStop(1, `rgba(240, 220, 235, ${0.9})`); // Pink-purple
         
-        const color2 = {
-            r: 220 + Math.cos(t * 1.2) * 15 + this.mouseX * mouseInfluence * 255,
-            g: 200 + Math.cos(t * 1.5) * 20 + this.mouseY * mouseInfluence * 255,
-            b: 230 + Math.cos(t * 1.8) * 15
-        };
-        
-        const color3 = {
-            r: 210 + Math.sin(t * 0.8) * 20,
-            g: 190 + Math.sin(t * 1.1) * 15,
-            b: 225 + Math.sin(t * 1.3) * 20
-        };
-        
-        gradient.addColorStop(0, `rgb(${color1.r}, ${color1.g}, ${color1.b})`);
-        gradient.addColorStop(0.5, `rgb(${color2.r}, ${color2.g}, ${color2.b})`);
-        gradient.addColorStop(1, `rgb(${color3.r}, ${color3.g}, ${color3.b})`);
-        
-        return gradient;
+        return baseGradient;
     }
     
-    drawOrbs() {
-        // Floating orb effects
+    drawSoftOrbs() {
+        // Soft ambient orbs for atmosphere
         const orbs = [
-            { x: 0.2, y: 0.3, size: 300, speed: 0.0003 },
-            { x: 0.7, y: 0.6, size: 250, speed: 0.0004 },
-            { x: 0.5, y: 0.8, size: 200, speed: 0.0002 },
+            { x: 0.15, y: 0.25, size: 350, speed: 0.0002, colors: ['rgba(255, 200, 230, 0.15)', 'rgba(255, 255, 255, 0)'] },
+            { x: 0.85, y: 0.75, size: 300, speed: 0.00025, colors: ['rgba(210, 200, 240, 0.12)', 'rgba(255, 255, 255, 0)'] },
+            { x: 0.5, y: 0.5, size: 400, speed: 0.00015, colors: ['rgba(220, 210, 255, 0.08)', 'rgba(255, 255, 255, 0)'] },
         ];
         
         orbs.forEach((orb, index) => {
-            const t = this.time * orb.speed + index * 2;
-            const x = this.canvas.width * (orb.x + Math.sin(t) * 0.1);
-            const y = this.canvas.height * (orb.y + Math.cos(t) * 0.1);
+            const t = this.time * orb.speed + index * Math.PI * 0.5;
+            const x = this.canvas.width * (orb.x + Math.sin(t) * 0.05);
+            const y = this.canvas.height * (orb.y + Math.cos(t) * 0.05);
             
             const gradient = this.ctx.createRadialGradient(x, y, 0, x, y, orb.size);
-            gradient.addColorStop(0, `rgba(255, 200, 220, ${0.15 + Math.sin(t) * 0.05})`);
-            gradient.addColorStop(0.5, `rgba(200, 180, 230, ${0.1 + Math.cos(t) * 0.03})`);
-            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            gradient.addColorStop(0, orb.colors[0]);
+            gradient.addColorStop(1, orb.colors[1]);
             
             this.ctx.fillStyle = gradient;
             this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         });
     }
     
+    drawHolographicBubble() {
+        const t = this.time * 0.0003;
+        
+        // Position based on screen size (responsive)
+        const isMobile = window.innerWidth <= 768;
+        
+        let bubbleX, bubbleY, bubbleSize;
+        
+        if (isMobile) {
+            // Mobile: bottom center
+            bubbleX = this.canvas.width * 0.5;
+            bubbleY = this.canvas.height * 0.85 + Math.sin(t * 2) * 20;
+            bubbleSize = Math.min(this.canvas.width, this.canvas.height) * 0.6;
+        } else {
+            // Desktop: top right
+            bubbleX = this.canvas.width * 0.75 + Math.sin(t * 1.5) * 30;
+            bubbleY = this.canvas.height * 0.35 + Math.cos(t * 1.5) * 25;
+            bubbleSize = Math.min(this.canvas.width, this.canvas.height) * 0.5;
+        }
+        
+        // Main bubble with holographic gradient
+        const bubbleGradient = this.ctx.createRadialGradient(
+            bubbleX - bubbleSize * 0.2, 
+            bubbleY - bubbleSize * 0.2, 
+            0,
+            bubbleX, 
+            bubbleY, 
+            bubbleSize
+        );
+        
+        // Holographic colors with animation
+        const hue1 = 300 + Math.sin(t * 2) * 30; // Pink-purple range
+        const hue2 = 200 + Math.cos(t * 1.8) * 40; // Blue range
+        const hue3 = 20 + Math.sin(t * 2.2) * 20; // Orange range
+        
+        bubbleGradient.addColorStop(0, `hsla(${hue1}, 70%, 85%, 0.4)`);
+        bubbleGradient.addColorStop(0.3, `hsla(${hue2}, 60%, 80%, 0.35)`);
+        bubbleGradient.addColorStop(0.6, `hsla(${hue3}, 80%, 75%, 0.3)`);
+        bubbleGradient.addColorStop(0.85, `hsla(${hue1}, 65%, 80%, 0.2)`);
+        bubbleGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        // Draw main bubble
+        this.ctx.fillStyle = bubbleGradient;
+        this.ctx.beginPath();
+        this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Rim light effect (colored edge)
+        const rimGradient = this.ctx.createRadialGradient(
+            bubbleX, 
+            bubbleY, 
+            bubbleSize * 0.85,
+            bubbleX, 
+            bubbleY, 
+            bubbleSize
+        );
+        
+        rimGradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        rimGradient.addColorStop(0.7, `rgba(255, 143, 163, ${0.4 + Math.sin(t * 3) * 0.1})`); // Pink
+        rimGradient.addColorStop(0.85, `rgba(255, 179, 128, ${0.5 + Math.cos(t * 2.5) * 0.15})`); // Orange
+        rimGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        this.ctx.fillStyle = rimGradient;
+        this.ctx.beginPath();
+        this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, Math.PI * 2);
+        this.ctx.fill();
+        
+        // Inner highlight (soap bubble effect)
+        const highlightGradient = this.ctx.createRadialGradient(
+            bubbleX - bubbleSize * 0.3, 
+            bubbleY - bubbleSize * 0.3, 
+            0,
+            bubbleX - bubbleSize * 0.3, 
+            bubbleY - bubbleSize * 0.3, 
+            bubbleSize * 0.4
+        );
+        
+        highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.3)');
+        highlightGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.1)');
+        highlightGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        this.ctx.fillStyle = highlightGradient;
+        this.ctx.beginPath();
+        this.ctx.arc(
+            bubbleX - bubbleSize * 0.3, 
+            bubbleY - bubbleSize * 0.3, 
+            bubbleSize * 0.4, 
+            0, 
+            Math.PI * 2
+        );
+        this.ctx.fill();
+    }
+    
+    drawLightStreaks() {
+        const t = this.time * 0.0004;
+        
+        // Multiple light streaks
+        const streaks = [
+            { x: 0.15, y: 0.6, angle: -25, width: 2, length: 300, offset: 0 },
+            { x: 0.18, y: 0.55, angle: -25, width: 1.5, length: 250, offset: Math.PI * 0.3 },
+            { x: 0.12, y: 0.65, angle: -25, width: 1, length: 200, offset: Math.PI * 0.6 },
+        ];
+        
+        streaks.forEach((streak, index) => {
+            const opacity = 0.15 + Math.sin(t * 2 + streak.offset) * 0.08;
+            
+            this.ctx.save();
+            this.ctx.translate(
+                this.canvas.width * streak.x, 
+                this.canvas.height * streak.y
+            );
+            this.ctx.rotate((streak.angle * Math.PI) / 180);
+            
+            const gradient = this.ctx.createLinearGradient(
+                0, 0, 
+                streak.length, 0
+            );
+            
+            gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
+            gradient.addColorStop(0.3, `rgba(255, 255, 255, ${opacity})`);
+            gradient.addColorStop(0.7, `rgba(255, 255, 255, ${opacity * 0.6})`);
+            gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+            
+            this.ctx.fillStyle = gradient;
+            this.ctx.fillRect(0, -streak.width / 2, streak.length, streak.width);
+            
+            this.ctx.restore();
+        });
+    }
+    
     animate() {
-        // Draw base gradient
-        this.ctx.fillStyle = this.createGradient();
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // 1. Draw base complex gradient
+        this.ctx.fillStyle = this.createComplexGradient();
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Draw floating orbs
-        this.drawOrbs();
+        // 2. Draw soft ambient orbs
+        this.drawSoftOrbs();
+        
+        // 3. Draw light streaks
+        this.drawLightStreaks();
+        
+        // 4. Draw main holographic bubble (on top)
+        this.drawHolographicBubble();
         
         this.time++;
         requestAnimationFrame(() => this.animate());
