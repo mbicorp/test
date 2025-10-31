@@ -1,5 +1,5 @@
-// Pattern B: Fluid Wave + Holographic Bubble Hybrid
-class HybridBackground {
+// Pattern A: Fluid Wave Animation (No Bubble)
+class FluidWaveBackground {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
@@ -27,6 +27,7 @@ class HybridBackground {
     }
     
     createBaseGradient() {
+        // Soft base gradient
         const gradient = this.ctx.createLinearGradient(
             0, 0, 
             this.canvas.width, 
@@ -57,6 +58,7 @@ class HybridBackground {
         const t = this.time * speed;
         const points = 100;
         
+        // Create gradient for the wave
         const gradient = this.ctx.createLinearGradient(
             0, 
             this.canvas.height * yOffset, 
@@ -64,6 +66,7 @@ class HybridBackground {
             this.canvas.height * yOffset + height
         );
         
+        // Animated colors
         const hue1 = color1 + Math.sin(t * 0.5) * 20;
         const hue2 = color2 + Math.cos(t * 0.6) * 25;
         
@@ -74,10 +77,12 @@ class HybridBackground {
         this.ctx.fillStyle = gradient;
         this.ctx.beginPath();
         
+        // Top edge of wave with fluid curves
         for (let i = 0; i <= points; i++) {
             const x = (i / points) * this.canvas.width;
             const baseY = this.canvas.height * yOffset;
             
+            // Multiple sine waves for complex shape
             const wave1 = Math.sin((x / this.canvas.width) * frequency * Math.PI * 2 + t) * amplitude;
             const wave2 = Math.sin((x / this.canvas.width) * frequency * Math.PI * 2 * 1.5 + t * 1.3) * amplitude * 0.5;
             const wave3 = Math.sin((x / this.canvas.width) * frequency * Math.PI * 2 * 0.8 + t * 0.7) * amplitude * 0.3;
@@ -91,6 +96,7 @@ class HybridBackground {
             }
         }
         
+        // Complete the shape
         this.ctx.lineTo(this.canvas.width, this.canvas.height * yOffset + height);
         this.ctx.lineTo(0, this.canvas.height * yOffset + height);
         this.ctx.closePath();
@@ -104,9 +110,9 @@ class HybridBackground {
             amplitude: 60,
             frequency: 2,
             speed: 0.0008,
-            color1: 200,
-            color2: 220,
-            opacity: 0.3,
+            color1: 200, // Blue
+            color2: 220, // Light blue
+            opacity: 0.35,
             height: 400
         });
         
@@ -116,9 +122,9 @@ class HybridBackground {
             amplitude: 70,
             frequency: 1.8,
             speed: 0.001,
-            color1: 280,
-            color2: 300,
-            opacity: 0.35,
+            color1: 280, // Purple
+            color2: 300, // Pink-purple
+            opacity: 0.4,
             height: 450
         });
         
@@ -128,66 +134,23 @@ class HybridBackground {
             amplitude: 55,
             frequency: 2.2,
             speed: 0.0012,
-            color1: 320,
-            color2: 340,
-            opacity: 0.33,
+            color1: 320, // Pink
+            color2: 340, // Light pink
+            opacity: 0.38,
             height: 380
         });
-    }
-    
-    drawHolographicBubble() {
-        const t = this.time * 0.002;
-        const isMobile = window.innerWidth <= 768;
         
-        let bubbleX, bubbleY, bubbleSize;
-        
-        if (isMobile) {
-            bubbleX = this.canvas.width * 0.5;
-            bubbleY = this.canvas.height * 0.85 + Math.sin(t * 2) * 20;
-            bubbleSize = Math.min(this.canvas.width, this.canvas.height) * 0.5;
-        } else {
-            bubbleX = this.canvas.width * 0.75 + Math.sin(t * 1.5) * 30;
-            bubbleY = this.canvas.height * 0.35 + Math.cos(t * 1.5) * 25;
-            bubbleSize = Math.min(this.canvas.width, this.canvas.height) * 0.45;
-        }
-        
-        // Wave effect inside bubble
-        const wave1CenterX = bubbleX + Math.cos(t * 1.5) * bubbleSize * 0.4;
-        const wave1CenterY = bubbleY + Math.sin(t * 1.5) * bubbleSize * 0.4;
-        
-        const wave1Gradient = this.ctx.createRadialGradient(
-            wave1CenterX, wave1CenterY, 0,
-            bubbleX, bubbleY, bubbleSize
-        );
-        
-        const hue1 = 320 + Math.sin(t * 1.2) * 40;
-        const hue2 = 200 + Math.cos(t * 1.5) * 50;
-        
-        wave1Gradient.addColorStop(0, `hsla(${hue1}, 75%, 88%, 0.4)`);
-        wave1Gradient.addColorStop(0.4, `hsla(${hue2}, 65%, 85%, 0.3)`);
-        wave1Gradient.addColorStop(0.7, `hsla(${hue1 - 20}, 60%, 80%, 0.2)`);
-        wave1Gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        
-        this.ctx.fillStyle = wave1Gradient;
-        this.ctx.beginPath();
-        this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, Math.PI * 2);
-        this.ctx.fill();
-        
-        // Rim light
-        const rimGradient = this.ctx.createRadialGradient(
-            bubbleX, bubbleY, bubbleSize * 0.85,
-            bubbleX, bubbleY, bubbleSize
-        );
-        
-        rimGradient.addColorStop(0, 'rgba(255, 255, 255, 0)');
-        rimGradient.addColorStop(0.65, `rgba(255, 143, 163, ${0.45 + Math.sin(t * 2) * 0.15})`);
-        rimGradient.addColorStop(0.82, `rgba(255, 179, 128, ${0.55 + Math.cos(t * 1.8) * 0.2})`);
-        rimGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-        
-        this.ctx.fillStyle = rimGradient;
-        this.ctx.beginPath();
-        this.ctx.arc(bubbleX, bubbleY, bubbleSize, 0, Math.PI * 2);
-        this.ctx.fill();
+        // Wave 4: Orange-pink wave (front)
+        this.drawFluidWave({
+            yOffset: 0.5,
+            amplitude: 65,
+            frequency: 1.9,
+            speed: 0.0009,
+            color1: 20, // Orange
+            color2: 340, // Pink
+            opacity: 0.32,
+            height: 420
+        });
     }
     
     drawLightStreaks() {
@@ -229,14 +192,11 @@ class HybridBackground {
         this.ctx.fillStyle = this.createBaseGradient();
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // 2. Fluid waves (back)
+        // 2. Fluid waves
         this.drawFluidWaves();
         
         // 3. Light streaks
         this.drawLightStreaks();
-        
-        // 4. Holographic bubble (front)
-        this.drawHolographicBubble();
         
         this.time++;
         requestAnimationFrame(() => this.animate());
@@ -323,7 +283,7 @@ function isMobile() {
 document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('backgroundCanvas');
     if (canvas) {
-        new HybridBackground(canvas);
+        new FluidWaveBackground(canvas);
     }
     
     if (!isMobile()) {
