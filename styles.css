@@ -1,0 +1,456 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', 'Meiryo', sans-serif;
+    overflow-x: hidden;
+    background: #f5f0f5;
+}
+
+/* Header Styles */
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 25px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    color: #333;
+}
+
+.desktop-nav {
+    display: flex;
+    gap: 35px;
+}
+
+.desktop-nav a {
+    text-decoration: none;
+    color: #333;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    transition: opacity 0.3s;
+}
+
+.desktop-nav a:hover {
+    opacity: 0.6;
+}
+
+.mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    padding: 12px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.mobile-menu-btn span {
+    width: 20px;
+    height: 2px;
+    background: #333;
+    display: block;
+    transition: 0.3s;
+}
+
+/* Hero Section */
+.hero {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+#backgroundCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 120px 60px 100px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Text Section */
+.text-section {
+    flex: 1;
+    max-width: 500px;
+}
+
+.catchphrase {
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    color: #555;
+    margin-bottom: 20px;
+    font-weight: 300;
+}
+
+.main-title {
+    font-size: 42px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+    color: #333;
+    margin-bottom: 40px;
+}
+
+.brand-name {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.brand-large {
+    font-size: 72px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: #222;
+}
+
+.brand-small {
+    font-size: 18px;
+    letter-spacing: 0.15em;
+    color: #555;
+    margin-left: 2px;
+}
+
+/* Products Section */
+.products-section {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 30px;
+    position: relative;
+    padding-bottom: 50px;
+}
+
+/* Bottle Styles */
+.bottle {
+    position: relative;
+    animation: float 4s ease-in-out infinite;
+    transform-style: preserve-3d;
+}
+
+.bottle-1 { animation-delay: 0s; }
+.bottle-2 { animation-delay: 0.5s; }
+.bottle-3 { animation-delay: 1s; }
+.bottle-4 { animation-delay: 1.5s; }
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotateY(0deg);
+    }
+    25% {
+        transform: translateY(-15px) rotateY(2deg);
+    }
+    50% {
+        transform: translateY(-25px) rotateY(0deg);
+    }
+    75% {
+        transform: translateY(-15px) rotateY(-2deg);
+    }
+}
+
+.bottle-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.15));
+}
+
+/* Bottle Top (Pump) */
+.bottle-top {
+    width: 35px;
+    height: 40px;
+    background: linear-gradient(135deg, #e0e0e0 0%, #b8b8b8 100%);
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    z-index: 2;
+}
+
+.bottle-top::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 25px;
+    background: linear-gradient(135deg, #d5d5d5 0%, #a8a8a8 100%);
+    border-radius: 4px 4px 0 0;
+}
+
+/* Bottle Body */
+.bottle-body {
+    width: 110px;
+    height: 280px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.9) 0%, 
+        rgba(255, 255, 255, 0.7) 100%);
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.bottle-body.small {
+    width: 70px;
+    height: 180px;
+}
+
+.bottle-body.jar {
+    width: 100px;
+    height: 130px;
+    border-radius: 20px;
+}
+
+/* Holographic Overlay */
+.holographic-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+        rgba(255, 182, 193, 0.4) 0%,
+        rgba(173, 216, 230, 0.3) 25%,
+        rgba(221, 160, 221, 0.4) 50%,
+        rgba(255, 192, 203, 0.3) 75%,
+        rgba(176, 224, 230, 0.4) 100%);
+    background-size: 400% 400%;
+    animation: holographicShift 8s ease infinite;
+    mix-blend-mode: overlay;
+    opacity: 0.8;
+}
+
+@keyframes holographicShift {
+    0% { background-position: 0% 50%; }
+    25% { background-position: 50% 100%; }
+    50% { background-position: 100% 50%; }
+    75% { background-position: 50% 0%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Bottle Label */
+.bottle-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    width: 90%;
+    z-index: 2;
+}
+
+.label-brand {
+    display: block;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.label-text {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+    position: absolute;
+    bottom: 50px;
+    right: 60px;
+    writing-mode: vertical-rl;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #666;
+    z-index: 2;
+}
+
+/* Footer */
+.hero-footer {
+    position: absolute;
+    bottom: 30px;
+    left: 60px;
+    font-size: 11px;
+    color: #999;
+    z-index: 2;
+}
+
+/* Responsive Design - Tablet */
+@media (max-width: 1024px) {
+    .hero-content {
+        padding: 100px 40px 80px;
+        flex-direction: column;
+        gap: 60px;
+    }
+
+    .text-section {
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .brand-name {
+        align-items: center;
+    }
+
+    .products-section {
+        width: 100%;
+        justify-content: center;
+        padding-bottom: 30px;
+    }
+
+    .main-title {
+        font-size: 36px;
+    }
+
+    .brand-large {
+        font-size: 60px;
+    }
+}
+
+/* Responsive Design - Mobile */
+@media (max-width: 768px) {
+    header {
+        padding: 20px 25px;
+    }
+
+    .desktop-nav {
+        display: none;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+    }
+
+    .hero-content {
+        padding: 100px 25px 60px;
+        gap: 50px;
+    }
+
+    .catchphrase {
+        font-size: 12px;
+    }
+
+    .main-title {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    .brand-large {
+        font-size: 48px;
+    }
+
+    .brand-small {
+        font-size: 14px;
+    }
+
+    .products-section {
+        gap: 15px;
+        padding-bottom: 20px;
+    }
+
+    .bottle-body {
+        width: 75px;
+        height: 200px;
+    }
+
+    .bottle-body.small {
+        width: 50px;
+        height: 130px;
+    }
+
+    .bottle-body.jar {
+        width: 70px;
+        height: 95px;
+    }
+
+    .bottle-top {
+        width: 25px;
+        height: 30px;
+    }
+
+    .bottle-top::before {
+        width: 15px;
+        height: 20px;
+    }
+
+    .label-brand {
+        font-size: 14px;
+    }
+
+    .label-text {
+        font-size: 7px;
+    }
+
+    .scroll-indicator {
+        bottom: 30px;
+        right: 25px;
+        font-size: 10px;
+    }
+
+    .hero-footer {
+        bottom: 20px;
+        left: 25px;
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-section {
+        gap: 10px;
+    }
+
+    .bottle-body {
+        width: 60px;
+        height: 160px;
+    }
+
+    .bottle-body.small {
+        width: 40px;
+        height: 110px;
+    }
+
+    .bottle-body.jar {
+        width: 55px;
+        height: 80px;
+    }
+
+    .main-title {
+        font-size: 24px;
+    }
+
+    .brand-large {
+        font-size: 40px;
+    }
+}
