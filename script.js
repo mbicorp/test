@@ -1,209 +1,276 @@
-// Pattern A: Fluid Wave Animation (No Bubble)
-class FluidWaveBackground {
-    constructor(canvas) {
-        this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+// ===================================
+// Three.js Bubble Background with Fresnel & Holographic Effects
+// ===================================
+
+class BubbleBackground {
+    constructor(container) {
+        this.container = container;
+        this.scene = null;
+        this.camera = null;
+        this.renderer = null;
+        this.bubbles = [];
+        this.mouse = { x: 0, y: 0 };
+        this.targetMouse = { x: 0, y: 0 };
         this.time = 0;
-        this.mouseX = 0;
-        this.mouseY = 0;
         
-        this.resize();
-        this.setupMouseTracking();
+        this.init();
+        this.createBubbles();
+        this.setupEventListeners();
         this.animate();
+    }
+    
+    init() {
+        // Scene
+        this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color(0xf5f0f5);
         
-        window.addEventListener('resize', () => this.resize());
-    }
-    
-    resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
-    }
-    
-    setupMouseTracking() {
-        document.addEventListener('mousemove', (e) => {
-            this.mouseX = e.clientX / window.innerWidth;
-            this.mouseY = e.clientY / window.innerHeight;
+        // Camera
+        this.camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        this.camera.position.z = 8;
+        
+        // Renderer
+        this.renderer = new THREE.WebGLRenderer({ 
+            antialias: true,
+            alpha: true 
         });
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        this.container.appendChild(this.renderer.domElement);
+        
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        this.scene.add(ambientLight);
+        
+        const pointLight1 = new THREE.PointLight(0xffc0cb, 1, 100);
+        pointLight1.position.set(5, 5, 5);
+        this.scene.add(pointLight1);
+        
+        const pointLight2 = new THREE.PointLight(0xadd8e6, 0.8, 100);
+        pointLight2.position.set(-5, -3, 3);
+        this.scene.add(pointLight2);
+        
+        const pointLight3 = new THREE.PointLight(0xdda0dd, 0.9, 100);
+        pointLight3.position.set(0, -5, -5);
+        this.scene.add(pointLight3);
     }
     
-    createBaseGradient() {
-        // Soft base gradient
-        const gradient = this.ctx.createLinearGradient(
-            0, 0, 
-            this.canvas.width, 
-            this.canvas.height
-        );
-        
-        const t = this.time * 0.0002;
-        
-        gradient.addColorStop(0, `rgba(245, 235, 245, ${0.95 + Math.sin(t) * 0.05})`);
-        gradient.addColorStop(0.5, `rgba(235, 225, 240, ${0.9 + Math.cos(t * 1.2) * 0.05})`);
-        gradient.addColorStop(1, `rgba(240, 230, 245, ${0.92 + Math.sin(t * 0.8) * 0.05})`);
-        
-        return gradient;
+    // Fresnel + Holographic Shader
+    createBubbleShader() {
+        return {
+            uniforms: {
+                time: { value: 0 },
+                resolution: { value: new THREE.Vector2() },
+                mousePos: { value: new THREE.Vector2() },
+                color1: { value: new THREE.Color(0xffb6c1) }, // Light pink
+                color2: { value: new THREE.Color(0xadd8e6) }, // Light blue
+                color3: { value: new THREE.Color(0xdda0dd) }, // Plum
+                color4: { value: new THREE.Color(0xffc0cb) }, // Pink
+                fresnelPower: { value: 2.5 },
+                refractionRatio: { value: 0.98 }
+            },
+            vertexShader: `
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                varying vec3 vViewPosition;
+                varying vec2 vUv;
+                
+                void main() {
+                    vUv = uv;
+                    vNormal = normalize(normalMatrix * normal);
+                    vPosition = position;
+                    
+                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+                    vViewPosition = -mvPosition.xyz;
+                    
+                    gl_Position = projectionMatrix * mvPosition;
+                }
+            `,
+            fragmentShader: `
+                uniform float time;
+                uniform vec2 resolution;
+                uniform vec2 mousePos;
+                uniform vec3 color1;
+                uniform vec3 color2;
+                uniform vec3 color3;
+                uniform vec3 color4;
+                uniform float fresnelPower;
+                uniform float refractionRatio;
+                
+                varying vec3 vNormal;
+                varying vec3 vPosition;
+                varying vec3 vViewPosition;
+                varying vec2 vUv;
+                
+                // Noise function for organic movement
+                float noise(vec3 p) {
+                    return fract(sin(dot(p, vec3(12.9898, 78.233, 45.5432))) * 43758.5453);
+                }
+                
+                void main() {
+                    // Fresnel effect
+                    vec3 viewDirection = normalize(vViewPosition);
+                    float fresnel = pow(1.0 - abs(dot(viewDirection, vNormal)), fresnelPower);
+                    
+                    // Holographic color cycling
+                    float angle = atan(vUv.y - 0.5, vUv.x - 0.5);
+                    float radius = length(vUv - 0.5);
+                    
+                    float colorCycle = sin(time * 0.5 + angle * 3.0 + radius * 5.0) * 0.5 + 0.5;
+                    
+                    // Mix multiple colors for iridescent effect
+                    vec3 color = mix(color1, color2, sin(time * 0.3 + vPosition.y * 2.0) * 0.5 + 0.5);
+                    color = mix(color, color3, sin(time * 0.4 + vPosition.x * 2.0) * 0.5 + 0.5);
+                    color = mix(color, color4, colorCycle);
+                    
+                    // Add shimmer based on viewing angle
+                    float shimmer = sin(time * 2.0 + vPosition.x * 10.0 + vPosition.y * 10.0) * 0.5 + 0.5;
+                    color += vec3(shimmer * 0.2);
+                    
+                    // Enhanced edge glow
+                    float edgeGlow = pow(fresnel, 1.5) * 1.5;
+                    color += vec3(edgeGlow * 0.4);
+                    
+                    // Refraction-like distortion
+                    vec3 refractColor = color * (1.0 - fresnel * 0.3);
+                    
+                    // Final transparency with Fresnel
+                    float alpha = 0.3 + fresnel * 0.5;
+                    
+                    // Pulsating effect
+                    alpha *= 0.9 + sin(time * 1.5) * 0.1;
+                    
+                    gl_FragColor = vec4(refractColor, alpha);
+                }
+            `,
+            transparent: true,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending
+        };
     }
     
-    drawFluidWave(waveConfig) {
-        const { 
-            yOffset, 
-            amplitude, 
-            frequency, 
-            speed, 
-            color1, 
-            color2, 
-            opacity,
-            height 
-        } = waveConfig;
+    createBubbles() {
+        const bubbleCount = window.innerWidth < 768 ? 6 : 10;
         
-        const t = this.time * speed;
-        const points = 100;
-        
-        // Create gradient for the wave
-        const gradient = this.ctx.createLinearGradient(
-            0, 
-            this.canvas.height * yOffset, 
-            this.canvas.width, 
-            this.canvas.height * yOffset + height
-        );
-        
-        // Animated colors
-        const hue1 = color1 + Math.sin(t * 0.5) * 20;
-        const hue2 = color2 + Math.cos(t * 0.6) * 25;
-        
-        gradient.addColorStop(0, `hsla(${hue1}, 75%, 85%, ${opacity})`);
-        gradient.addColorStop(0.5, `hsla(${hue2}, 70%, 80%, ${opacity * 0.8})`);
-        gradient.addColorStop(1, `hsla(${hue1 + 10}, 65%, 75%, ${opacity * 0.6})`);
-        
-        this.ctx.fillStyle = gradient;
-        this.ctx.beginPath();
-        
-        // Top edge of wave with fluid curves
-        for (let i = 0; i <= points; i++) {
-            const x = (i / points) * this.canvas.width;
-            const baseY = this.canvas.height * yOffset;
+        for (let i = 0; i < bubbleCount; i++) {
+            const size = Math.random() * 1.5 + 0.8;
+            const geometry = new THREE.SphereGeometry(size, 64, 64);
+            const shaderData = this.createBubbleShader();
             
-            // Multiple sine waves for complex shape
-            const wave1 = Math.sin((x / this.canvas.width) * frequency * Math.PI * 2 + t) * amplitude;
-            const wave2 = Math.sin((x / this.canvas.width) * frequency * Math.PI * 2 * 1.5 + t * 1.3) * amplitude * 0.5;
-            const wave3 = Math.sin((x / this.canvas.width) * frequency * Math.PI * 2 * 0.8 + t * 0.7) * amplitude * 0.3;
+            const material = new THREE.ShaderMaterial({
+                uniforms: shaderData.uniforms,
+                vertexShader: shaderData.vertexShader,
+                fragmentShader: shaderData.fragmentShader,
+                transparent: shaderData.transparent,
+                side: shaderData.side,
+                depthWrite: shaderData.depthWrite,
+                blending: shaderData.blending
+            });
             
-            const y = baseY + wave1 + wave2 + wave3;
+            const bubble = new THREE.Mesh(geometry, material);
             
-            if (i === 0) {
-                this.ctx.moveTo(x, y);
-            } else {
-                this.ctx.lineTo(x, y);
-            }
+            // Random positioning
+            bubble.position.x = (Math.random() - 0.5) * 15;
+            bubble.position.y = (Math.random() - 0.5) * 10;
+            bubble.position.z = (Math.random() - 0.5) * 10 - 5;
+            
+            // Animation properties
+            bubble.userData = {
+                speedX: (Math.random() - 0.5) * 0.01,
+                speedY: (Math.random() - 0.5) * 0.01,
+                speedZ: (Math.random() - 0.5) * 0.005,
+                rotationSpeed: (Math.random() - 0.5) * 0.02,
+                floatSpeed: Math.random() * 0.02 + 0.01,
+                floatAmplitude: Math.random() * 0.5 + 0.3,
+                initialY: bubble.position.y
+            };
+            
+            this.bubbles.push(bubble);
+            this.scene.add(bubble);
         }
-        
-        // Complete the shape
-        this.ctx.lineTo(this.canvas.width, this.canvas.height * yOffset + height);
-        this.ctx.lineTo(0, this.canvas.height * yOffset + height);
-        this.ctx.closePath();
-        this.ctx.fill();
     }
     
-    drawFluidWaves() {
-        // Wave 1: Blue wave (back)
-        this.drawFluidWave({
-            yOffset: 0.35,
-            amplitude: 60,
-            frequency: 2,
-            speed: 0.0008,
-            color1: 200, // Blue
-            color2: 220, // Light blue
-            opacity: 0.35,
-            height: 400
-        });
-        
-        // Wave 2: Purple wave (middle)
-        this.drawFluidWave({
-            yOffset: 0.4,
-            amplitude: 70,
-            frequency: 1.8,
-            speed: 0.001,
-            color1: 280, // Purple
-            color2: 300, // Pink-purple
-            opacity: 0.4,
-            height: 450
-        });
-        
-        // Wave 3: Pink wave (middle-front)
-        this.drawFluidWave({
-            yOffset: 0.45,
-            amplitude: 55,
-            frequency: 2.2,
-            speed: 0.0012,
-            color1: 320, // Pink
-            color2: 340, // Light pink
-            opacity: 0.38,
-            height: 380
-        });
-        
-        // Wave 4: Orange-pink wave (front)
-        this.drawFluidWave({
-            yOffset: 0.5,
-            amplitude: 65,
-            frequency: 1.9,
-            speed: 0.0009,
-            color1: 20, // Orange
-            color2: 340, // Pink
-            opacity: 0.32,
-            height: 420
-        });
+    setupEventListeners() {
+        window.addEventListener('resize', () => this.onResize());
+        document.addEventListener('mousemove', (e) => this.onMouseMove(e));
     }
     
-    drawLightStreaks() {
-        const t = this.time * 0.0012;
-        
-        const streaks = [
-            { x: 0.15, y: 0.6, angle: -25, width: 2.5, length: 350, offset: 0 },
-            { x: 0.18, y: 0.55, angle: -25, width: 2, length: 280, offset: Math.PI * 0.3 },
-            { x: 0.12, y: 0.65, angle: -25, width: 1.5, length: 230, offset: Math.PI * 0.6 },
-        ];
-        
-        streaks.forEach((streak) => {
-            const opacity = 0.2 + Math.sin(t * 2 + streak.offset) * 0.12;
-            
-            this.ctx.save();
-            this.ctx.translate(
-                this.canvas.width * streak.x, 
-                this.canvas.height * streak.y
-            );
-            this.ctx.rotate((streak.angle * Math.PI) / 180);
-            
-            const gradient = this.ctx.createLinearGradient(0, 0, streak.length, 0);
-            gradient.addColorStop(0, `rgba(255, 255, 255, 0)`);
-            gradient.addColorStop(0.25, `rgba(255, 255, 255, ${opacity * 0.5})`);
-            gradient.addColorStop(0.5, `rgba(255, 255, 255, ${opacity})`);
-            gradient.addColorStop(0.75, `rgba(255, 255, 255, ${opacity * 0.6})`);
-            gradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
-            
-            this.ctx.fillStyle = gradient;
-            this.ctx.fillRect(0, -streak.width / 2, streak.length, streak.width);
-            this.ctx.restore();
-        });
+    onResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+    
+    onMouseMove(event) {
+        this.targetMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.targetMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     }
     
     animate() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // 1. Base gradient
-        this.ctx.fillStyle = this.createBaseGradient();
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // 2. Fluid waves
-        this.drawFluidWaves();
-        
-        // 3. Light streaks
-        this.drawLightStreaks();
-        
-        this.time++;
         requestAnimationFrame(() => this.animate());
+        
+        this.time += 0.01;
+        
+        // Smooth mouse following
+        this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.05;
+        this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.05;
+        
+        // Animate bubbles
+        this.bubbles.forEach((bubble, index) => {
+            const userData = bubble.userData;
+            
+            // Floating motion
+            bubble.position.y = userData.initialY + 
+                Math.sin(this.time * userData.floatSpeed + index) * userData.floatAmplitude;
+            
+            // Slow drift
+            bubble.position.x += userData.speedX;
+            bubble.position.z += userData.speedZ;
+            
+            // Rotation
+            bubble.rotation.x += userData.rotationSpeed;
+            bubble.rotation.y += userData.rotationSpeed * 0.7;
+            
+            // Mouse interaction
+            const distance = Math.sqrt(
+                Math.pow(bubble.position.x / 8 - this.mouse.x, 2) +
+                Math.pow(bubble.position.y / 6 - this.mouse.y, 2)
+            );
+            
+            if (distance < 0.5) {
+                bubble.position.x += (bubble.position.x / 8 - this.mouse.x) * 0.02;
+                bubble.position.y += (bubble.position.y / 6 - this.mouse.y) * 0.02;
+            }
+            
+            // Boundary wrapping
+            if (bubble.position.x > 10) bubble.position.x = -10;
+            if (bubble.position.x < -10) bubble.position.x = 10;
+            if (bubble.position.z > 5) bubble.position.z = -5;
+            if (bubble.position.z < -10) bubble.position.z = 5;
+            
+            // Update shader uniforms
+            bubble.material.uniforms.time.value = this.time;
+            bubble.material.uniforms.mousePos.value.set(this.mouse.x, this.mouse.y);
+        });
+        
+        // Camera subtle movement
+        this.camera.position.x = this.mouse.x * 0.5;
+        this.camera.position.y = this.mouse.y * 0.5;
+        this.camera.lookAt(this.scene.position);
+        
+        this.renderer.render(this.scene, this.camera);
     }
 }
 
+// ===================================
 // Parallax Effect for Bottles
+// ===================================
+
 class ParallaxEffect {
     constructor() {
         this.bottles = document.querySelectorAll('.bottle');
@@ -240,7 +307,10 @@ class ParallaxEffect {
     }
 }
 
+// ===================================
 // Mobile Menu Toggle
+// ===================================
+
 class MobileMenu {
     constructor() {
         this.menuBtn = document.querySelector('.mobile-menu-btn');
@@ -258,7 +328,10 @@ class MobileMenu {
     }
 }
 
+// ===================================
 // Smooth Scroll
+// ===================================
+
 function initSmoothScroll() {
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -274,16 +347,23 @@ function initSmoothScroll() {
     });
 }
 
-// Performance optimization for mobile
+// ===================================
+// Performance Check
+// ===================================
+
 function isMobile() {
     return window.innerWidth <= 768;
 }
 
-// Initialize everything when DOM is ready
+// ===================================
+// Initialize Everything
+// ===================================
+
 document.addEventListener('DOMContentLoaded', () => {
-    const canvas = document.getElementById('backgroundCanvas');
-    if (canvas) {
-        new FluidWaveBackground(canvas);
+    const container = document.getElementById('three-container');
+    
+    if (container) {
+        new BubbleBackground(container);
     }
     
     if (!isMobile()) {
@@ -296,7 +376,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('loaded');
 });
 
-// Handle window resize
+// ===================================
+// Handle Resize
+// ===================================
+
 let resizeTimeout;
 window.addEventListener('resize', () => {
     clearTimeout(resizeTimeout);
