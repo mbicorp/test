@@ -1,313 +1,462 @@
-// TSUGIMI - Qurap Style Demo
-// Loading & Video Control
-
-class SiteController {
-    constructor() {
-        this.loading = document.getElementById('loading');
-        this.videos = document.querySelectorAll('video');
-        this.burger = document.getElementById('burger');
-        
-        this.init();
-    }
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
     
-    init() {
-        // ページロード時の処理
-        window.addEventListener('load', () => {
-            this.hideLoading();
-            this.initVideos();
-            this.initAnimations();
-        });
-        
-        // バーガーメニュー
-        if (this.burger) {
-            this.burger.addEventListener('click', () => {
-                this.toggleMenu();
-            });
-        }
-        
-        // スムーススクロール
-        this.initSmoothScroll();
-    }
+    // =========================
+    // Loading Screen
+    // =========================
+    const loading = document.getElementById('loading');
     
-    // ローディング画面を非表示
-    hideLoading() {
-        setTimeout(() => {
-            this.loading.classList.add('hidden');
-            setTimeout(() => {
-                this.loading.style.display = 'none';
+    window.addEventListener('load', function() {
+        setTimeout(function() {
+            loading.classList.add('is-hidden');
+            setTimeout(function() {
+                loading.style.display = 'none';
             }, 500);
-        }, 1500);
-    }
+        }, 1000);
+    });
+
+    // =========================
+    // Mobile Menu Toggle
+    // =========================
+    const burger = document.getElementById('burger');
+    const menu = document.querySelector('.js-menu');
+    const menuLinks = document.querySelectorAll('.menu__links a');
     
-    // 動画の初期化と自動再生
-    initVideos() {
-        this.videos.forEach(video => {
-            // 動画を確実に再生
-            const playPromise = video.play();
-            
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        console.log('動画再生成功:', video.src);
-                    })
-                    .catch(error => {
-                        console.log('動画再生エラー:', error);
-                        // エラー時はポスター画像を表示
-                        video.style.opacity = '0';
-                    });
-            }
-            
-            // 動画が読み込まれたら表示
-            video.addEventListener('loadeddata', () => {
-                video.style.opacity = '1';
-                video.style.transition = 'opacity 0.5s';
-            });
-            
-            // 動画読み込みエラー時の処理
-            video.addEventListener('error', (e) => {
-                console.error('動画読み込みエラー:', e);
-                // ポスター画像を背景として表示
-                const poster = video.getAttribute('poster');
-                if (poster && video.parentElement) {
-                    video.parentElement.style.backgroundImage = `url(${poster})`;
-                    video.parentElement.style.backgroundSize = 'cover';
-                    video.parentElement.style.backgroundPosition = 'center';
-                    video.style.display = 'none';
-                }
+    if (burger && menu) {
+        burger.addEventListener('click', function() {
+            this.classList.toggle('is-active');
+            menu.classList.toggle('is-open');
+            document.body.style.overflow = menu.classList.contains('is-open') ? 'hidden' : '';
+        });
+
+        // Close menu when clicking on a link
+        menuLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                burger.classList.remove('is-active');
+                menu.classList.remove('is-open');
+                document.body.style.overflow = '';
             });
         });
     }
-    
-    // スクロールアニメーション
-    initAnimations() {
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-        
-        // アニメーション対象の要素
-        const animateElements = document.querySelectorAll('.concept-content, .product-card');
-        animateElements.forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-            observer.observe(el);
-        });
-    }
-    
-    // バーガーメニューの切り替え
-    toggleMenu() {
-        alert('メニューの実装はデモでは省略されています');
-    }
-    
-    // スムーススクロール
-    initSmoothScroll() {
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', (e) => {
+
+    // =========================
+    // Smooth Scrolling for Anchor Links
+    // =========================
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            if (href && href !== '#') {
                 e.preventDefault();
-                const target = document.querySelector(anchor.getAttribute('href'));
+                const target = document.querySelector(href);
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                    const headerHeight = 80;
+                    const targetPosition = target.offsetTop - headerHeight;
+                    
+                    window.scrollTo({
+                        top: targetPosition,
+                        behavior: 'smooth'
                     });
                 }
-            });
+            }
+        });
+    });
+
+    // =========================
+    // Swiper Initialization
+    // =========================
+    if (typeof Swiper !== 'undefined') {
+        // Topics Swiper
+        const topicsSwiper = new Swiper('.js-slider-topics', {
+            slidesPerView: 'auto',
+            spaceBetween: 16,
+            freeMode: true,
+            breakpoints: {
+                1024: {
+                    enabled: false,
+                    slidesPerView: 3,
+                    spaceBetween: 16
+                }
+            }
         });
     }
-}
 
-// 動画フォールバック処理
-class VideoFallback {
-    constructor() {
-        this.initFallback();
+    // =========================
+    // SNS Auto Scroll
+    // =========================
+    const snsAuto = document.querySelector('.js-sns-auto');
+    if (snsAuto) {
+        // Clone the first list for infinite scroll effect
+        const firstList = snsAuto.querySelector('.sns-imgs-list');
+        if (firstList) {
+            const clone = firstList.cloneNode(true);
+            snsAuto.appendChild(clone);
+        }
     }
-    
-    initFallback() {
-        // Qurapの動画が読み込めない場合の代替処理
-        const videos = document.querySelectorAll('video');
-        
-        videos.forEach((video, index) => {
-            const sources = video.querySelectorAll('source');
+
+    // =========================
+    // Intersection Observer for Animations
+    // =========================
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements with animation classes
+    const animatedElements = document.querySelectorAll('.js-mns, .js-main-desc, .js-s-logo, .js-btn');
+    animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        observer.observe(el);
+    });
+
+    // =========================
+    // Modal Functionality
+    // =========================
+    const modals = document.querySelectorAll('.js-modal');
+    const modalTriggers = document.querySelectorAll('.js-trigger-modal');
+    const modalCloses = document.querySelectorAll('.modal__close');
+    const modalBgs = document.querySelectorAll('.modal__bg');
+
+    // Open Modal
+    modalTriggers.forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            e.preventDefault();
+            const modalName = this.getAttribute('data-modal');
+            const modal = document.querySelector(`.modal[data-name="${modalName}"]`);
             
-            sources.forEach(source => {
-                const originalSrc = source.src;
+            if (modal) {
+                modal.classList.add('is-active');
+                document.body.style.overflow = 'hidden';
                 
-                // 動画読み込みテスト
-                fetch(originalSrc, { method: 'HEAD' })
-                    .then(response => {
-                        if (!response.ok) {
-                            console.warn(`動画が読み込めません: ${originalSrc}`);
-                            this.createFallbackElement(video, index);
-                        }
-                    })
-                    .catch(() => {
-                        console.warn(`動画が読み込めません: ${originalSrc}`);
-                        this.createFallbackElement(video, index);
-                    });
-            });
+                // Play video if it's a YouTube iframe
+                const iframe = modal.querySelector('iframe');
+                if (iframe && iframe.src.includes('youtube.com')) {
+                    const src = iframe.src;
+                    if (!src.includes('autoplay=1')) {
+                        iframe.src = src + (src.includes('?') ? '&' : '?') + 'autoplay=1';
+                    }
+                }
+            }
+        });
+    });
+
+    // Close Modal
+    const closeModal = function(modal) {
+        modal.classList.remove('is-active');
+        document.body.style.overflow = '';
+        
+        // Stop video if it's a YouTube iframe
+        const iframe = modal.querySelector('iframe');
+        if (iframe && iframe.src.includes('youtube.com')) {
+            const src = iframe.src.replace('&autoplay=1', '').replace('?autoplay=1', '');
+            iframe.src = src;
+        }
+    };
+
+    modalCloses.forEach(close => {
+        close.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) {
+                closeModal(modal);
+            }
+        });
+    });
+
+    modalBgs.forEach(bg => {
+        bg.addEventListener('click', function() {
+            const modal = this.closest('.modal');
+            if (modal) {
+                closeModal(modal);
+            }
+        });
+    });
+
+    // Close modal on ESC key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const activeModal = document.querySelector('.modal.is-active');
+            if (activeModal) {
+                closeModal(activeModal);
+            }
+        }
+    });
+
+    // =========================
+    // Scroll Progress Bar
+    // =========================
+    const scrollBar = document.querySelector('.scroll-bar__line');
+    if (scrollBar) {
+        window.addEventListener('scroll', function() {
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight - windowHeight;
+            const scrolled = window.scrollY;
+            const progress = (scrolled / documentHeight) * 100;
+            
+            // Hide scroll bar when near bottom
+            if (progress > 90) {
+                scrollBar.style.opacity = '0';
+            } else {
+                scrollBar.style.opacity = '1';
+            }
         });
     }
-    
-    createFallbackElement(video, index) {
-        // 代替グラデーションアニメーションを作成
-        const fallback = document.createElement('div');
-        fallback.className = 'video-fallback';
-        fallback.style.cssText = `
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                135deg,
-                rgba(232, 216, 240, 0.8) 0%,
-                rgba(216, 232, 248, 0.8) 25%,
-                rgba(240, 216, 240, 0.8) 50%,
-                rgba(216, 232, 248, 0.8) 75%,
-                rgba(232, 216, 240, 0.8) 100%
-            );
-            background-size: 400% 400%;
-            animation: gradientFlow ${10 + index * 2}s ease infinite;
-        `;
-        
-        // アニメーション定義を追加
-        if (!document.getElementById('fallback-styles')) {
-            const style = document.createElement('style');
-            style.id = 'fallback-styles';
-            style.textContent = `
-                @keyframes gradientFlow {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
-                }
-                
-                @keyframes float {
-                    0%, 100% { transform: translateY(0) scale(1); }
-                    50% { transform: translateY(-20px) scale(1.05); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        // 浮遊する球体を追加
-        const bubble = document.createElement('div');
-        bubble.style.cssText = `
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(
-                circle at 30% 30%,
-                rgba(255, 255, 255, 0.8) 0%,
-                rgba(200, 180, 230, 0.4) 50%,
-                rgba(255, 200, 220, 0.2) 100%
-            );
-            filter: blur(30px);
-            animation: float 6s ease-in-out infinite;
-        `;
-        fallback.appendChild(bubble);
-        
-        // 動画の代わりに配置
-        if (video.parentElement) {
-            video.style.display = 'none';
-            video.parentElement.appendChild(fallback);
-        }
-    }
-}
 
-// パフォーマンス最適化
-class PerformanceOptimizer {
-    constructor() {
-        this.optimizeVideos();
-        this.initLazyLoad();
+    // =========================
+    // Header Background on Scroll
+    // =========================
+    const header = document.querySelector('header');
+    if (header) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                header.style.backgroundColor = 'rgba(251, 250, 252, 0.95)';
+                header.style.backdropFilter = 'blur(10px)';
+            } else {
+                header.style.backgroundColor = 'transparent';
+                header.style.backdropFilter = 'none';
+            }
+        });
     }
-    
-    optimizeVideos() {
-        // モバイルデバイスでは動画の品質を下げる
-        const isMobile = window.innerWidth < 768;
+
+    // =========================
+    // Link Hover Effects
+    // =========================
+    const linkTextElements = document.querySelectorAll('.link-text-01');
+    linkTextElements.forEach(link => {
+        link.addEventListener('mouseenter', function() {
+            this.style.color = 'var(--color-purple-01)';
+        });
         
-        if (isMobile) {
-            document.querySelectorAll('video').forEach(video => {
-                // プリロードを無効化してバンド幅を節約
-                video.setAttribute('preload', 'metadata');
-            });
-        }
-    }
-    
-    initLazyLoad() {
-        // 画像の遅延読み込み
-        const images = document.querySelectorAll('img[data-src]');
+        link.addEventListener('mouseleave', function() {
+            this.style.color = '';
+        });
+    });
+
+    // =========================
+    // Button Hover Effects
+    // =========================
+    const buttons = document.querySelectorAll('.js-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
         
-        const imageObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // =========================
+    // Product Entrance Animation
+    // =========================
+    const products = document.querySelectorAll('.js-prod-01, .js-prod-02, .js-prod-03, .js-prod-04');
+    const productObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            }
+        });
+    }, { threshold: 0.2 });
+
+    products.forEach(product => {
+        product.style.animationPlayState = 'paused';
+        productObserver.observe(product);
+    });
+
+    // =========================
+    // Deco Movie Parallax Effect
+    // =========================
+    const decoMovies = document.querySelectorAll('.deco-movie');
+    window.addEventListener('scroll', function() {
+        const scrolled = window.scrollY;
+        
+        decoMovies.forEach((movie, index) => {
+            const speed = 0.5 + (index * 0.1);
+            const yPos = -(scrolled * speed);
+            movie.style.transform = `translateY(${yPos}px) rotate(${index % 2 === 0 ? '0deg' : '90deg'})`;
+        });
+    });
+
+    // =========================
+    // Lazy Loading for Images
+    // =========================
+    const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+    const imageObserver = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                if (img.dataset.src) {
                     img.src = img.dataset.src;
                     img.removeAttribute('data-src');
-                    imageObserver.unobserve(img);
                 }
-            });
+                imageObserver.unobserve(img);
+            }
         });
-        
-        images.forEach(img => imageObserver.observe(img));
-    }
-}
-
-// 初期化
-document.addEventListener('DOMContentLoaded', () => {
-    new SiteController();
-    new VideoFallback();
-    new PerformanceOptimizer();
-    
-    // デバッグ情報
-    console.log(`
-    🎨 TSUGIMI Demo Site
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    📹 動画構造：Qurap方式を再現
-    🎭 レイヤー：複数の装飾動画を配置
-    📱 レスポンシブ：完全対応
-    ⚡ パフォーマンス：最適化済み
-    
-    ℹ️ 注意：
-    Qurapの実際の動画ファイルは著作権で
-    保護されているため、プレースホルダーを
-    使用しています。
-    
-    実際の動画ファイルに置き換えるか、
-    Three.jsバージョンをご利用ください。
-    ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    `);
-});
-
-// ウィンドウリサイズ時の処理
-let resizeTimer;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => {
-        // リサイズ後の処理
-        console.log('Window resized');
-    }, 250);
-});
-
-// ページ離脱前の処理
-window.addEventListener('beforeunload', () => {
-    // 動画を停止してメモリを解放
-    document.querySelectorAll('video').forEach(video => {
-        video.pause();
-        video.src = '';
-        video.load();
     });
+
+    lazyImages.forEach(img => imageObserver.observe(img));
+
+    // =========================
+    // Console Welcome Message
+    // =========================
+    console.log('%c Welcome to Qurap! ', 'background: #654ea3; color: white; padding: 10px 20px; font-size: 16px; border-radius: 5px;');
+    console.log('%c ツヤ膜ラッピングシャンプー ', 'color: #654ea3; font-size: 14px;');
+
+    // =========================
+    // Resize Handler
+    // =========================
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            // Close mobile menu on resize to desktop
+            if (window.innerWidth >= 1024) {
+                if (burger) burger.classList.remove('is-active');
+                if (menu) menu.classList.remove('is-open');
+                document.body.style.overflow = '';
+            }
+        }, 250);
+    });
+
+    // =========================
+    // Performance Optimization
+    // =========================
+    // Debounce scroll events
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // Throttle scroll events for better performance
+    function throttle(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    }
+
+    // Apply throttle to scroll-heavy operations
+    const throttledScroll = throttle(function() {
+        // Heavy scroll operations here
+    }, 100);
+
+    window.addEventListener('scroll', throttledScroll);
+
+    // =========================
+    // Accessibility Enhancements
+    // =========================
+    // Add keyboard navigation support
+    const focusableElements = document.querySelectorAll('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])');
+    
+    focusableElements.forEach(element => {
+        element.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                if (this.tagName === 'A' || this.tagName === 'BUTTON') {
+                    this.click();
+                }
+            }
+        });
+    });
+
+    // =========================
+    // Form Enhancement (if forms exist)
+    // =========================
+    const forms = document.querySelectorAll('form');
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Add your form submission logic here
+            console.log('Form submitted');
+        });
+    });
+
+    // =========================
+    // Analytics Tracking (Placeholder)
+    // =========================
+    function trackEvent(category, action, label) {
+        if (typeof gtag !== 'undefined') {
+            gtag('event', action, {
+                'event_category': category,
+                'event_label': label
+            });
+        }
+        console.log('Event tracked:', category, action, label);
+    }
+
+    // Track button clicks
+    buttons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const btnText = this.textContent.trim();
+            trackEvent('Button', 'Click', btnText);
+        });
+    });
+
+    // =========================
+    // Easter Egg
+    // =========================
+    let konamiCode = [];
+    const konamiPattern = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    
+    document.addEventListener('keydown', function(e) {
+        konamiCode.push(e.key);
+        konamiCode.splice(-konamiPattern.length - 1, konamiCode.length - konamiPattern.length);
+        
+        if (konamiCode.join('') === konamiPattern.join('')) {
+            console.log('%c 🎉 Konami Code Activated! 🎉 ', 'background: #654ea3; color: white; padding: 20px; font-size: 20px;');
+            document.body.style.animation = 'rainbow 2s linear infinite';
+            
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 5000);
+        }
+    });
+
+    // Rainbow animation for easter egg
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // =========================
+    // Initialize Complete
+    // =========================
+    console.log('🎉 Qurap website initialized successfully!');
 });
+
+// =========================
+// Service Worker Registration (Optional)
+// =========================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        // Uncomment to enable service worker
+        // navigator.serviceWorker.register('/sw.js')
+        //     .then(registration => console.log('SW registered:', registration))
+        //     .catch(err => console.log('SW registration failed:', err));
+    });
+}
