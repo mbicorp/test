@@ -1,392 +1,313 @@
-// ===================================
-// Three.js Bubble Background with Fresnel & Holographic Effects
-// ===================================
+// TSUGIMI - Qurap Style Demo
+// Loading & Video Control
 
-class BubbleBackground {
-    constructor(container) {
-        this.container = container;
-        this.scene = null;
-        this.camera = null;
-        this.renderer = null;
-        this.bubbles = [];
-        this.mouse = { x: 0, y: 0 };
-        this.targetMouse = { x: 0, y: 0 };
-        this.time = 0;
+class SiteController {
+    constructor() {
+        this.loading = document.getElementById('loading');
+        this.videos = document.querySelectorAll('video');
+        this.burger = document.getElementById('burger');
         
         this.init();
-        this.createBubbles();
-        this.setupEventListeners();
-        this.animate();
     }
     
     init() {
-        // Scene
-        this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color(0xf5f0f5);
-        
-        // Camera
-        this.camera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
-        this.camera.position.z = 8;
-        
-        // Renderer
-        this.renderer = new THREE.WebGLRenderer({ 
-            antialias: true,
-            alpha: true 
+        // ページロード時の処理
+        window.addEventListener('load', () => {
+            this.hideLoading();
+            this.initVideos();
+            this.initAnimations();
         });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.container.appendChild(this.renderer.domElement);
         
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        this.scene.add(ambientLight);
+        // バーガーメニュー
+        if (this.burger) {
+            this.burger.addEventListener('click', () => {
+                this.toggleMenu();
+            });
+        }
         
-        const pointLight1 = new THREE.PointLight(0xffc0cb, 1, 100);
-        pointLight1.position.set(5, 5, 5);
-        this.scene.add(pointLight1);
-        
-        const pointLight2 = new THREE.PointLight(0xadd8e6, 0.8, 100);
-        pointLight2.position.set(-5, -3, 3);
-        this.scene.add(pointLight2);
-        
-        const pointLight3 = new THREE.PointLight(0xdda0dd, 0.9, 100);
-        pointLight3.position.set(0, -5, -5);
-        this.scene.add(pointLight3);
+        // スムーススクロール
+        this.initSmoothScroll();
     }
     
-    // Fresnel + Holographic Shader
-    createBubbleShader() {
-        return {
-            uniforms: {
-                time: { value: 0 },
-                resolution: { value: new THREE.Vector2() },
-                mousePos: { value: new THREE.Vector2() },
-                color1: { value: new THREE.Color(0xffb6c1) }, // Light pink
-                color2: { value: new THREE.Color(0xadd8e6) }, // Light blue
-                color3: { value: new THREE.Color(0xdda0dd) }, // Plum
-                color4: { value: new THREE.Color(0xffc0cb) }, // Pink
-                fresnelPower: { value: 2.5 },
-                refractionRatio: { value: 0.98 }
-            },
-            vertexShader: `
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-                varying vec3 vViewPosition;
-                varying vec2 vUv;
-                
-                void main() {
-                    vUv = uv;
-                    vNormal = normalize(normalMatrix * normal);
-                    vPosition = position;
-                    
-                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    vViewPosition = -mvPosition.xyz;
-                    
-                    gl_Position = projectionMatrix * mvPosition;
-                }
-            `,
-            fragmentShader: `
-                uniform float time;
-                uniform vec2 resolution;
-                uniform vec2 mousePos;
-                uniform vec3 color1;
-                uniform vec3 color2;
-                uniform vec3 color3;
-                uniform vec3 color4;
-                uniform float fresnelPower;
-                uniform float refractionRatio;
-                
-                varying vec3 vNormal;
-                varying vec3 vPosition;
-                varying vec3 vViewPosition;
-                varying vec2 vUv;
-                
-                // Noise function for organic movement
-                float noise(vec3 p) {
-                    return fract(sin(dot(p, vec3(12.9898, 78.233, 45.5432))) * 43758.5453);
-                }
-                
-                void main() {
-                    // Fresnel effect
-                    vec3 viewDirection = normalize(vViewPosition);
-                    float fresnel = pow(1.0 - abs(dot(viewDirection, vNormal)), fresnelPower);
-                    
-                    // Holographic color cycling
-                    float angle = atan(vUv.y - 0.5, vUv.x - 0.5);
-                    float radius = length(vUv - 0.5);
-                    
-                    float colorCycle = sin(time * 0.5 + angle * 3.0 + radius * 5.0) * 0.5 + 0.5;
-                    
-                    // Mix multiple colors for iridescent effect
-                    vec3 color = mix(color1, color2, sin(time * 0.3 + vPosition.y * 2.0) * 0.5 + 0.5);
-                    color = mix(color, color3, sin(time * 0.4 + vPosition.x * 2.0) * 0.5 + 0.5);
-                    color = mix(color, color4, colorCycle);
-                    
-                    // Add shimmer based on viewing angle
-                    float shimmer = sin(time * 2.0 + vPosition.x * 10.0 + vPosition.y * 10.0) * 0.5 + 0.5;
-                    color += vec3(shimmer * 0.2);
-                    
-                    // Enhanced edge glow
-                    float edgeGlow = pow(fresnel, 1.5) * 1.5;
-                    color += vec3(edgeGlow * 0.4);
-                    
-                    // Refraction-like distortion
-                    vec3 refractColor = color * (1.0 - fresnel * 0.3);
-                    
-                    // Final transparency with Fresnel
-                    float alpha = 0.3 + fresnel * 0.5;
-                    
-                    // Pulsating effect
-                    alpha *= 0.9 + sin(time * 1.5) * 0.1;
-                    
-                    gl_FragColor = vec4(refractColor, alpha);
-                }
-            `,
-            transparent: true,
-            side: THREE.DoubleSide,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending
-        };
+    // ローディング画面を非表示
+    hideLoading() {
+        setTimeout(() => {
+            this.loading.classList.add('hidden');
+            setTimeout(() => {
+                this.loading.style.display = 'none';
+            }, 500);
+        }, 1500);
     }
     
-    createBubbles() {
-        const bubbleCount = window.innerWidth < 768 ? 6 : 10;
-        
-        for (let i = 0; i < bubbleCount; i++) {
-            const size = Math.random() * 1.5 + 0.8;
-            const geometry = new THREE.SphereGeometry(size, 64, 64);
-            const shaderData = this.createBubbleShader();
+    // 動画の初期化と自動再生
+    initVideos() {
+        this.videos.forEach(video => {
+            // 動画を確実に再生
+            const playPromise = video.play();
             
-            const material = new THREE.ShaderMaterial({
-                uniforms: shaderData.uniforms,
-                vertexShader: shaderData.vertexShader,
-                fragmentShader: shaderData.fragmentShader,
-                transparent: shaderData.transparent,
-                side: shaderData.side,
-                depthWrite: shaderData.depthWrite,
-                blending: shaderData.blending
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        console.log('動画再生成功:', video.src);
+                    })
+                    .catch(error => {
+                        console.log('動画再生エラー:', error);
+                        // エラー時はポスター画像を表示
+                        video.style.opacity = '0';
+                    });
+            }
+            
+            // 動画が読み込まれたら表示
+            video.addEventListener('loadeddata', () => {
+                video.style.opacity = '1';
+                video.style.transition = 'opacity 0.5s';
             });
             
-            const bubble = new THREE.Mesh(geometry, material);
-            
-            // Random positioning
-            bubble.position.x = (Math.random() - 0.5) * 15;
-            bubble.position.y = (Math.random() - 0.5) * 10;
-            bubble.position.z = (Math.random() - 0.5) * 10 - 5;
-            
-            // Animation properties
-            bubble.userData = {
-                speedX: (Math.random() - 0.5) * 0.01,
-                speedY: (Math.random() - 0.5) * 0.01,
-                speedZ: (Math.random() - 0.5) * 0.005,
-                rotationSpeed: (Math.random() - 0.5) * 0.02,
-                floatSpeed: Math.random() * 0.02 + 0.01,
-                floatAmplitude: Math.random() * 0.5 + 0.3,
-                initialY: bubble.position.y
-            };
-            
-            this.bubbles.push(bubble);
-            this.scene.add(bubble);
-        }
+            // 動画読み込みエラー時の処理
+            video.addEventListener('error', (e) => {
+                console.error('動画読み込みエラー:', e);
+                // ポスター画像を背景として表示
+                const poster = video.getAttribute('poster');
+                if (poster && video.parentElement) {
+                    video.parentElement.style.backgroundImage = `url(${poster})`;
+                    video.parentElement.style.backgroundSize = 'cover';
+                    video.parentElement.style.backgroundPosition = 'center';
+                    video.style.display = 'none';
+                }
+            });
+        });
     }
     
-    setupEventListeners() {
-        window.addEventListener('resize', () => this.onResize());
-        document.addEventListener('mousemove', (e) => this.onMouseMove(e));
-    }
-    
-    onResize() {
-        this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.updateProjectionMatrix();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-    
-    onMouseMove(event) {
-        this.targetMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        this.targetMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-    }
-    
-    animate() {
-        requestAnimationFrame(() => this.animate());
+    // スクロールアニメーション
+    initAnimations() {
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
         
-        this.time += 0.01;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
         
-        // Smooth mouse following
-        this.mouse.x += (this.targetMouse.x - this.mouse.x) * 0.05;
-        this.mouse.y += (this.targetMouse.y - this.mouse.y) * 0.05;
+        // アニメーション対象の要素
+        const animateElements = document.querySelectorAll('.concept-content, .product-card');
+        animateElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+            observer.observe(el);
+        });
+    }
+    
+    // バーガーメニューの切り替え
+    toggleMenu() {
+        alert('メニューの実装はデモでは省略されています');
+    }
+    
+    // スムーススクロール
+    initSmoothScroll() {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(anchor.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    }
+}
+
+// 動画フォールバック処理
+class VideoFallback {
+    constructor() {
+        this.initFallback();
+    }
+    
+    initFallback() {
+        // Qurapの動画が読み込めない場合の代替処理
+        const videos = document.querySelectorAll('video');
         
-        // Animate bubbles
-        this.bubbles.forEach((bubble, index) => {
-            const userData = bubble.userData;
+        videos.forEach((video, index) => {
+            const sources = video.querySelectorAll('source');
             
-            // Floating motion
-            bubble.position.y = userData.initialY + 
-                Math.sin(this.time * userData.floatSpeed + index) * userData.floatAmplitude;
-            
-            // Slow drift
-            bubble.position.x += userData.speedX;
-            bubble.position.z += userData.speedZ;
-            
-            // Rotation
-            bubble.rotation.x += userData.rotationSpeed;
-            bubble.rotation.y += userData.rotationSpeed * 0.7;
-            
-            // Mouse interaction
-            const distance = Math.sqrt(
-                Math.pow(bubble.position.x / 8 - this.mouse.x, 2) +
-                Math.pow(bubble.position.y / 6 - this.mouse.y, 2)
+            sources.forEach(source => {
+                const originalSrc = source.src;
+                
+                // 動画読み込みテスト
+                fetch(originalSrc, { method: 'HEAD' })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.warn(`動画が読み込めません: ${originalSrc}`);
+                            this.createFallbackElement(video, index);
+                        }
+                    })
+                    .catch(() => {
+                        console.warn(`動画が読み込めません: ${originalSrc}`);
+                        this.createFallbackElement(video, index);
+                    });
+            });
+        });
+    }
+    
+    createFallbackElement(video, index) {
+        // 代替グラデーションアニメーションを作成
+        const fallback = document.createElement('div');
+        fallback.className = 'video-fallback';
+        fallback.style.cssText = `
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(232, 216, 240, 0.8) 0%,
+                rgba(216, 232, 248, 0.8) 25%,
+                rgba(240, 216, 240, 0.8) 50%,
+                rgba(216, 232, 248, 0.8) 75%,
+                rgba(232, 216, 240, 0.8) 100%
             );
-            
-            if (distance < 0.5) {
-                bubble.position.x += (bubble.position.x / 8 - this.mouse.x) * 0.02;
-                bubble.position.y += (bubble.position.y / 6 - this.mouse.y) * 0.02;
-            }
-            
-            // Boundary wrapping
-            if (bubble.position.x > 10) bubble.position.x = -10;
-            if (bubble.position.x < -10) bubble.position.x = 10;
-            if (bubble.position.z > 5) bubble.position.z = -5;
-            if (bubble.position.z < -10) bubble.position.z = 5;
-            
-            // Update shader uniforms
-            bubble.material.uniforms.time.value = this.time;
-            bubble.material.uniforms.mousePos.value.set(this.mouse.x, this.mouse.y);
-        });
+            background-size: 400% 400%;
+            animation: gradientFlow ${10 + index * 2}s ease infinite;
+        `;
         
-        // Camera subtle movement
-        this.camera.position.x = this.mouse.x * 0.5;
-        this.camera.position.y = this.mouse.y * 0.5;
-        this.camera.lookAt(this.scene.position);
+        // アニメーション定義を追加
+        if (!document.getElementById('fallback-styles')) {
+            const style = document.createElement('style');
+            style.id = 'fallback-styles';
+            style.textContent = `
+                @keyframes gradientFlow {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+                
+                @keyframes float {
+                    0%, 100% { transform: translateY(0) scale(1); }
+                    50% { transform: translateY(-20px) scale(1.05); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
         
-        this.renderer.render(this.scene, this.camera);
+        // 浮遊する球体を追加
+        const bubble = document.createElement('div');
+        bubble.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(
+                circle at 30% 30%,
+                rgba(255, 255, 255, 0.8) 0%,
+                rgba(200, 180, 230, 0.4) 50%,
+                rgba(255, 200, 220, 0.2) 100%
+            );
+            filter: blur(30px);
+            animation: float 6s ease-in-out infinite;
+        `;
+        fallback.appendChild(bubble);
+        
+        // 動画の代わりに配置
+        if (video.parentElement) {
+            video.style.display = 'none';
+            video.parentElement.appendChild(fallback);
+        }
     }
 }
 
-// ===================================
-// Parallax Effect for Bottles
-// ===================================
-
-class ParallaxEffect {
+// パフォーマンス最適化
+class PerformanceOptimizer {
     constructor() {
-        this.bottles = document.querySelectorAll('.bottle');
-        this.mouseX = 0;
-        this.mouseY = 0;
-        this.targetX = 0;
-        this.targetY = 0;
-        
-        this.init();
+        this.optimizeVideos();
+        this.initLazyLoad();
     }
     
-    init() {
-        document.addEventListener('mousemove', (e) => {
-            this.targetX = (e.clientX / window.innerWidth - 0.5) * 2;
-            this.targetY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
+    optimizeVideos() {
+        // モバイルデバイスでは動画の品質を下げる
+        const isMobile = window.innerWidth < 768;
         
-        this.animate();
-    }
-    
-    animate() {
-        this.mouseX += (this.targetX - this.mouseX) * 0.05;
-        this.mouseY += (this.targetY - this.mouseY) * 0.05;
-        
-        this.bottles.forEach((bottle) => {
-            const speed = parseFloat(bottle.dataset.speed) || 1;
-            const x = this.mouseX * speed * 15;
-            const y = this.mouseY * speed * 15;
-            
-            bottle.style.transform = `translate(${x}px, ${y}px)`;
-        });
-        
-        requestAnimationFrame(() => this.animate());
-    }
-}
-
-// ===================================
-// Mobile Menu Toggle
-// ===================================
-
-class MobileMenu {
-    constructor() {
-        this.menuBtn = document.querySelector('.mobile-menu-btn');
-        this.nav = document.querySelector('.desktop-nav');
-        this.isOpen = false;
-        
-        if (this.menuBtn) {
-            this.menuBtn.addEventListener('click', () => this.toggle());
+        if (isMobile) {
+            document.querySelectorAll('video').forEach(video => {
+                // プリロードを無効化してバンド幅を節約
+                video.setAttribute('preload', 'metadata');
+            });
         }
     }
     
-    toggle() {
-        this.isOpen = !this.isOpen;
-        this.menuBtn.classList.toggle('active', this.isOpen);
-    }
-}
-
-// ===================================
-// Smooth Scroll
-// ===================================
-
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
+    initLazyLoad() {
+        // 画像の遅延読み込み
+        const images = document.querySelectorAll('img[data-src]');
+        
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    imageObserver.unobserve(img);
+                }
+            });
         });
-    });
+        
+        images.forEach(img => imageObserver.observe(img));
+    }
 }
 
-// ===================================
-// Performance Check
-// ===================================
-
-function isMobile() {
-    return window.innerWidth <= 768;
-}
-
-// ===================================
-// Initialize Everything
-// ===================================
-
+// 初期化
 document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('three-container');
+    new SiteController();
+    new VideoFallback();
+    new PerformanceOptimizer();
     
-    if (container) {
-        new BubbleBackground(container);
-    }
+    // デバッグ情報
+    console.log(`
+    🎨 TSUGIMI Demo Site
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    📹 動画構造：Qurap方式を再現
+    🎭 レイヤー：複数の装飾動画を配置
+    📱 レスポンシブ：完全対応
+    ⚡ パフォーマンス：最適化済み
     
-    if (!isMobile()) {
-        new ParallaxEffect();
-    }
+    ℹ️ 注意：
+    Qurapの実際の動画ファイルは著作権で
+    保護されているため、プレースホルダーを
+    使用しています。
     
-    new MobileMenu();
-    initSmoothScroll();
-    
-    document.body.classList.add('loaded');
+    実際の動画ファイルに置き換えるか、
+    Three.jsバージョンをご利用ください。
+    ━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    `);
 });
 
-// ===================================
-// Handle Resize
-// ===================================
-
-let resizeTimeout;
+// ウィンドウリサイズ時の処理
+let resizeTimer;
 window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        if (!isMobile() && !document.querySelector('.parallax-initialized')) {
-            new ParallaxEffect();
-            document.body.classList.add('parallax-initialized');
-        }
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+        // リサイズ後の処理
+        console.log('Window resized');
     }, 250);
+});
+
+// ページ離脱前の処理
+window.addEventListener('beforeunload', () => {
+    // 動画を停止してメモリを解放
+    document.querySelectorAll('video').forEach(video => {
+        video.pause();
+        video.src = '';
+        video.load();
+    });
 });

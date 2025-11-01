@@ -7,30 +7,239 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- 3D Canvas Background -->
-    <div id="canvas-container"></div>
-    
-    <!-- Content -->
-    <div class="content">
-        <header class="header">
-            <div class="logo">TSUGIMI</div>
-        </header>
-        
-        <main class="hero">
-            <div class="hero-text">
-                <p class="subtitle">第2のキューティクル<sup>※</sup>へ</p>
-                <h1 class="title">ツヤ膜ラッピング<br>シャンプー</h1>
-                <div class="note">
-                    <p>※ツヤ膜成分が髪を包み込みます</p>
-                </div>
-            </div>
-        </main>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading">
+        <div class="loading-logo">
+            <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+                <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
+                      font-family="Arial, sans-serif" font-size="32" font-weight="300" letter-spacing="8">
+                    TSUGIMI
+                </text>
+            </svg>
+        </div>
     </div>
 
-    <!-- Three.js Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- Main Script -->
-    <script src="main.js"></script>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="logo">TSUGIMI</a>
+        <nav class="nav-desktop">
+            <a href="#concept" class="nav-link">CONCEPT</a>
+            <a href="#product" class="nav-link">PRODUCT</a>
+            <a href="#topics" class="nav-link">TOPICS</a>
+        </nav>
+        <button class="burger" id="burger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </header>
+
+    <!-- First View -->
+    <section class="fv">
+        <!-- 背景動画レイヤー -->
+        <div class="fv-movie">
+            <video 
+                id="video-hero"
+                class="hero-video"
+                muted 
+                playsinline 
+                autoplay 
+                loop
+                poster="https://via.placeholder.com/1920x1080/e8d8f0/654ea3?text=TSUGIMI">
+                <!-- Qurapの動画URL（デモ用） -->
+                <source src="https://qurap.jp/movie/hero.mp4" type="video/mp4">
+                <!-- 代替：プレースホルダー -->
+            </video>
+        </div>
+
+        <!-- 装飾動画レイヤー1（右上） -->
+        <div class="deco-movie deco-movie-1">
+            <video 
+                class="deco-video"
+                muted 
+                playsinline 
+                autoplay 
+                loop
+                poster="https://via.placeholder.com/800x800/d8e8f8/654ea3?text=Bubble">
+                <source src="https://qurap.jp/movie/deco.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- 装飾動画レイヤー2（左下） -->
+        <div class="deco-movie deco-movie-2">
+            <video 
+                class="deco-video"
+                muted 
+                playsinline 
+                autoplay 
+                loop
+                poster="https://via.placeholder.com/800x800/f0d8f0/654ea3?text=Bubble">
+                <source src="https://qurap.jp/movie/deco.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- コンテンツ -->
+        <div class="fv-content">
+            <div class="fv-text">
+                <p class="fv-subtitle">第2のキューティクル<sup>※</sup>へ</p>
+                <h1 class="fv-title">
+                    ツヤ膜ラッピング<br>
+                    シャンプー
+                </h1>
+                <div class="fv-brand">
+                    <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
+                              font-family="Arial, sans-serif" font-size="28" font-weight="300" letter-spacing="10">
+                            TSUGIMI
+                        </text>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- 商品画像 -->
+            <div class="fv-products">
+                <div class="product-item product-1">
+                    <img src="https://via.placeholder.com/200x600/654ea3/ffffff?text=Shampoo+1" alt="シャンプー1">
+                </div>
+                <div class="product-item product-2">
+                    <img src="https://via.placeholder.com/200x600/8b6db8/ffffff?text=Shampoo+2" alt="シャンプー2">
+                </div>
+                <div class="product-item product-3">
+                    <img src="https://via.placeholder.com/150x450/654ea3/ffffff?text=Oil" alt="ヘアオイル">
+                </div>
+                <div class="product-item product-4">
+                    <img src="https://via.placeholder.com/250x250/8b6db8/ffffff?text=Mask" alt="ヘアマスク">
+                </div>
+            </div>
+        </div>
+
+        <!-- スクロールインジケーター -->
+        <div class="scroll-indicator">
+            <span class="scroll-text">SCROLL DOWN</span>
+            <div class="scroll-line"></div>
+        </div>
+
+        <!-- 注釈 -->
+        <p class="fv-notice">※ 補修成分が髪に密着してコーティングすること</p>
+
+        <!-- Wave -->
+        <div class="wave-container">
+            <svg class="wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+                <path fill="#fbfafc" d="M0,160L48,144C96,128,192,96,288,90.7C384,85,480,107,576,122.7C672,139,768,149,864,138.7C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Concept Section -->
+    <section class="concept-section" id="concept">
+        <!-- 装飾動画レイヤー3 -->
+        <div class="deco-movie deco-movie-3">
+            <video 
+                class="deco-video"
+                muted 
+                playsinline 
+                autoplay 
+                loop
+                poster="https://via.placeholder.com/800x800/e8d8f0/654ea3?text=Bubble">
+                <source src="https://qurap.jp/movie/deco.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <div class="concept-content">
+            <div class="concept-image">
+                <img src="https://via.placeholder.com/600x800/f0d8f0/654ea3?text=Concept+Image" alt="コンセプト">
+            </div>
+            <div class="concept-text">
+                <h2 class="concept-title">美しさで、つつみ込む。</h2>
+                <p class="concept-description">
+                    個性や多様性が認められる現代において、<br>
+                    私らしさと引き換えにダメージを受けた髪を、<br>
+                    独自のサイエンスでつつみ込んでいく。<br><br>
+                    もっと自由にヘアスタイルを楽しみ、<br>
+                    もっと誰かに会いたくなる。<br>
+                    そんなあなたであることを楽しめるきっかけを。
+                </p>
+                <div class="concept-logo">
+                    <p class="concept-subtitle">ラッピングケア<br>ビューティーブランド</p>
+                    <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
+                              font-family="Arial, sans-serif" font-size="24" font-weight="300" letter-spacing="8">
+                            TSUGIMI
+                        </text>
+                    </svg>
+                </div>
+                <a href="#" class="btn">View Concept</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Section -->
+    <section class="product-section" id="product">
+        <h2 class="section-title">PRODUCT</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/400x600/654ea3/ffffff?text=Product+1" alt="商品1">
+                </div>
+                <h3 class="product-name">ラッピングモイスト<br>シャンプー/トリートメント</h3>
+                <p class="product-price">各 <span class="price-large">1,540</span>円(税込)</p>
+                <p class="product-volume">440mL / 440g</p>
+                <a href="#" class="btn btn-small">Product Detail</a>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://via.placeholder.com/400x600/8b6db8/ffffff?text=Product+2" alt="商品2">
+                </div>
+                <h3 class="product-name">ラッピングコントロール<br>シャンプー/トリートメント</h3>
+                <p class="product-price">各 <span class="price-large">1,540</span>円(税込)</p>
+                <p class="product-volume">440mL / 440g</p>
+                <a href="#" class="btn btn-small">Product Detail</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <!-- 装飾動画レイヤー4 -->
+        <div class="deco-movie deco-movie-4">
+            <video 
+                class="deco-video"
+                muted 
+                playsinline 
+                autoplay 
+                loop
+                poster="https://via.placeholder.com/500x500/d8e8f8/654ea3?text=Bubble">
+                <source src="https://qurap.jp/movie/deco.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+                    <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
+                          font-family="Arial, sans-serif" font-size="24" font-weight="300" letter-spacing="8">
+                        TSUGIMI
+                    </text>
+                </svg>
+            </div>
+            <nav class="footer-nav">
+                <a href="#concept">CONCEPT</a>
+                <a href="#product">PRODUCT</a>
+                <a href="#topics">TOPICS</a>
+            </nav>
+            <div class="footer-social">
+                <p>FOLLOW US ON</p>
+                <div class="social-links">
+                    <a href="#" aria-label="X">𝕏</a>
+                    <a href="#" aria-label="Instagram">📷</a>
+                    <a href="#" aria-label="TikTok">♪</a>
+                </div>
+            </div>
+            <p class="footer-copy">©︎ 2024 TSUGIMI</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
