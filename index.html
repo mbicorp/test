@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSUGIMI。</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700;800&family=Josefin+Sans:wght@400&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="logo">TSUGIMI<sup>®</sup></div>
+
+        <!-- デスクトップ用ナビゲーション -->
+        <nav class="nav desktop-nav">
+            <div class="nav-pill">
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="#philosophy" class="nav-link">PHILOSOPHY</a></li>
+                    <li class="nav-item"><a href="#matrix" class="nav-link">MATRIX</a></li>
+                    <li class="nav-item"><a href="#quality" class="nav-link">QUALITY</a></li>
+                    <li class="nav-item"><a href="#faq" class="nav-link">FAQ</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- モバイル用ハンバーガーメニュー -->
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="メニュー">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+    </header>
+
+    <!-- モバイルメニューオーバーレイ -->
+    <div class="mobile-menu-overlay" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo">TSUGIMI<sup>®</sup></div>
+            <button class="close-btn" id="close-btn" aria-label="閉じる">
+                <span class="close-line"></span>
+                <span class="close-line"></span>
+            </button>
+        </div>
+
+        <nav class="mobile-nav">
+            <ul class="mobile-menu-list">
+                <li class="mobile-menu-item"><a href="#philosophy" class="mobile-menu-link">PHILOSOPHY</a></li>
+                <li class="mobile-menu-item"><a href="#matrix" class="mobile-menu-link">MATRIX</a></li>
+                <li class="mobile-menu-item"><a href="#quality" class="mobile-menu-link">QUALITY</a></li>
+                <li class="mobile-menu-item"><a href="#faq" class="mobile-menu-link">FAQ</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- ヒーローセクション（グラデーションアニメーション背景） -->
+    <section class="hero">
+        <canvas id="hero-canvas" class="hero-canvas"></canvas>
+        <div class="hero-content">
+            <h1 class="hero-title">TSUGIMI<sup>®</sup></h1>
+            <p class="hero-subtitle">経験は、輝きに変わる。</p>
+        </div>
+    </section>
+
+    <!-- メインコンテンツ（黒背景） -->
+    <main class="main-content">
+        <div class="content-container">
+            <!-- The Philosophy セクション -->
+            <section id="philosophy" class="philosophy-section">
+                <div class="philosophy-text">
+                    <h2 class="philosophy-title">The Philosophy</h2>
+                    <p class="philosophy-description">
+                        シャネル初となるウォッチの復刻版、プルミエール<br>
+                        エディション オリジナルをジュエリーのように纏って。<br>
+                        メゾンのコードにインスピレーションを得たこのクリ<br>
+                        エイションは、香水「シャネル N°5」のボトルストッパー<br>
+                        を想起させるラインが特徴的。
+                    </p>
+                </div>
+
+                <div class="philosophy-images">
+                    <div class="philosophy-image-wrapper">
+                        <picture>
+                            <source media="(min-width: 1025px)" srcset="38401400_image01.jpg">
+                            <source media="(min-width: 769px) and (max-width: 1024px)" srcset="25601050_image01.jpg">
+                            <source media="(min-width: 481px) and (max-width: 768px)" srcset="1536900_image01.jpg">
+                            <source media="(max-width: 480px)" srcset="9601200_image01.jpg">
+                            <img src="38401400_image01.jpg" alt="TSUGIMI Philosophy" class="philosophy-img">
+                        </picture>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Golden Lattice Matrix セクション -->
+            <section id="matrix" class="golden-lattice-section">
+                <div class="golden-lattice-bg">
+                    <img src="25601440_background2.jpg" alt="Golden Lattice Matrix Background" class="golden-lattice-bg-img">
+                </div>
+                <div class="golden-lattice-content">
+                    <h2 class="golden-lattice-title">Golden Lattice<br class="mobile-br">Matrix<sup>™</sup></h2>
+                    <p class="golden-lattice-description">
+                        シャネル初となるウォッチの復刻版、プルミエール<br>
+                        エディション オリジナルをジュエリーのように纏って。<br>
+                        メゾンのコードにインスピレーションを得たこのクリ<br>
+                        エイションは、香水「シャネル N°5」のボトルストッパー<br>
+                        を想起させるラインが特徴的。
+                    </p>
+                </div>
+            </section>
+
+            <!-- Hero Section 1 - image02 (縦書き+横書き混在レイアウト) -->
+            <section class="hero-section hero-section-image02">
+                <picture>
+                    <source media="(min-width: 1920px)" srcset="38401400_image02.jpg">
+                    <source media="(min-width: 1024px)" srcset="25601050_image02.jpg">
+                    <source media="(min-width: 768px)" srcset="1536900_image02.jpg">
+                    <source media="(max-width: 767px)" srcset="9601200_image02.jpg">
+                    <img src="38401400_image02.jpg" alt="清らかな始まりの予感" class="hero-image" loading="eager">
+                </picture>
+
+                <!-- 新しいコンテンツグループ（縦書き+横書き） -->
+                <div class="hero-content-group">
+                    <!-- 横書きエリア（左側） -->
+                    <div class="horizontal-text-area">
+                        <p class="description-jp">2000年の時を超えて目覚めた、清らかな花。一点の濁りも許さないその哲学が、あなたをまっさらな感覚へと導く。古の生命力が、新しい可能性を、静かに目覚めさせる。</p>
+                        <p class="description-en">Kikka Hirado is an independently run retreat hotel featuring just five rooms, each creating an atmosphere that invites you to relax and indulge your senses. Experience the blend of Western and Japanese history and culture, along with the rich natural beauty of Hirado.</p>
+                    </div>
+
+                    <!-- 縦書きキャッチコピー（右側） -->
+                    <h2 class="vertical-title">清らかな<br>始まりの予感</h2>
+                </div>
+            </section>
+
+            <!-- Hero Section 2 - image03 (左寄せ 縦書き+横書き混在レイアウト) -->
+            <section class="hero-section hero-section-image03">
+                <picture>
+                    <source media="(min-width: 1920px)" srcset="38401400_image03.jpg">
+                    <source media="(min-width: 1024px)" srcset="25601050_image03.jpg">
+                    <source media="(min-width: 768px)" srcset="1536900_image03.jpg">
+                    <source media="(max-width: 767px)" srcset="9601200_image03.jpg">
+                    <img src="38401400_image03.jpg" alt="一枚のしなやかな光" class="hero-image" loading="eager">
+                </picture>
+
+                <!-- コンテンツグループ（左寄せ） -->
+                <div class="hero-content-group hero-content-left">
+                    <!-- 横書きエリア（左側） -->
+                    <div class="horizontal-text-area">
+                        <p class="description-jp">ひとつの輝きは、5つの光から生まれる。まっすぐに届き、扉を開く光。優しく奏で、調和を生む光。朝露のように、やわらかく包む光。静かに長く、余韻を残す光。そして、混じり気のない、原点となる光。それぞれが異なる役割を持ち、重なり合うことで、新しい景色が現れる。金継ぎが、器の傷を美しさに変えるように。5種の光が、あなたの経験を輝きに変える。</p>
+                        <p class="description-en">Five types of Vitamin C create a deep radiance. Each plays a different role, and when layered together, reveals a new perspective. Transform your experience into irreplaceable brilliance.</p>
+                    </div>
+
+                    <!-- 縦書きエリア（右側） -->
+                    <div class="vertical-area">
+                        <h2 class="vertical-title">一枚の<br>しなやかな光</h2>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hero Section 3 - image04 (右寄せ 縦書き+横書き混在レイアウト) -->
+            <section class="hero-section hero-section-image04">
+                <picture>
+                    <source media="(min-width: 1920px)" srcset="38401400_image04.jpg">
+                    <source media="(min-width: 1024px)" srcset="25601050_image04.jpg">
+                    <source media="(min-width: 768px)" srcset="1536900_image04.jpg">
+                    <source media="(max-width: 767px)" srcset="9601200_image04.jpg">
+                    <img src="38401400_image04.jpg" alt="静かなる核心の力" class="hero-image" loading="eager">
+                </picture>
+
+                <!-- コンテンツグループ（右寄せ） -->
+                <div class="hero-content-group">
+                    <!-- 横書きエリア（左側） -->
+                    <div class="horizontal-text-area">
+                        <p class="description-jp">一点の曇りもない、99%の純度。白玉のような、透明な輝き。それは、内なる光を解き放ち、時に揺るがない、核心の力を与える。曇りを晴らし、あなたの本来の輝きを取り戻す。これが、透明な純度という哲学。</p>
+                        <p class="description-en">Just as Kintsugi transforms cracks into beauty, TSUGIMI elevates your daily experiences into irreplaceable radiance. Here lies true beauty that deepens with time.</p>
+                    </div>
+
+                    <!-- 縦書きエリア（右側） -->
+                    <div class="vertical-area">
+                        <h2 class="vertical-title">静かなる<br>核心の力</h2>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quality Section（品質へのこだわり） -->
+            <section id="quality" class="quality-section">
+                <!-- 背景パノラマスクロール -->
+                <div class="quality-bg-slideshow">
+                    <div class="quality-panorama">
+                        <picture>
+                            <source media="(min-width: 1536px)" srcset="19201080_hinsitu01.jpg">
+                            <source media="(min-width: 1024px)" srcset="1536864_hinsitu01.jpg">
+                            <source media="(min-width: 768px)" srcset="1024576_hinsitu01.jpg">
+                            <source media="(max-width: 767px)" srcset="960540_hinsitu01.jpg">
+                            <img src="19201080_hinsitu01.jpg" alt="" class="quality-bg-img">
+                        </picture>
+                        <picture>
+                            <source media="(min-width: 1536px)" srcset="19201080_hinsitu02.jpg">
+                            <source media="(min-width: 1024px)" srcset="1536864_hinsitu02.jpg">
+                            <source media="(min-width: 768px)" srcset="1024576_hinsitu02.jpg">
+                            <source media="(max-width: 767px)" srcset="960540_hinsitu02.jpg">
+                            <img src="19201080_hinsitu02.jpg" alt="" class="quality-bg-img">
+                        </picture>
+                        <picture>
+                            <source media="(min-width: 1536px)" srcset="19201080_hinsitu03.jpg">
+                            <source media="(min-width: 1024px)" srcset="1536864_hinsitu03.jpg">
+                            <source media="(min-width: 768px)" srcset="1024576_hinsitu03.jpg">
+                            <source media="(max-width: 767px)" srcset="960540_hinsitu03.jpg">
+                            <img src="19201080_hinsitu03.jpg" alt="" class="quality-bg-img">
+                        </picture>
+                        <!-- 無限ループ用に1枚目を複製 -->
+                        <picture>
+                            <source media="(min-width: 1536px)" srcset="19201080_hinsitu01.jpg">
+                            <source media="(min-width: 1024px)" srcset="1536864_hinsitu01.jpg">
+                            <source media="(min-width: 768px)" srcset="1024576_hinsitu01.jpg">
+                            <source media="(max-width: 767px)" srcset="960540_hinsitu01.jpg">
+                            <img src="19201080_hinsitu01.jpg" alt="" class="quality-bg-img">
+                        </picture>
+                    </div>
+                </div>
+
+                <!-- 背景オーバーレイ -->
+                <div class="quality-overlay"></div>
+
+                <!-- コンテンツレイヤー -->
+                <div class="quality-content">
+                    <!-- 3つのコンテンツブロック -->
+                    <div class="quality-blocks">
+                        <!-- ブロック1: クリーンな環境 -->
+                        <div class="quality-block vertical-text">
+                            <h3 class="quality-sub-catch">クリーンな環境から生まれる品質</h3>
+                            <p class="quality-description">医薬品も製造可能な国内GMP認定工場。清浄に保たれた環境が、私たちの品質の第一歩です。</p>
+                        </div>
+
+                        <!-- ブロック2: フリー設計 -->
+                        <div class="quality-block vertical-text">
+                            <h3 class="quality-sub-catch">からだ想いのフリー設計</h3>
+                            <p class="quality-description">毎日、安心して口にできるよう、７つの添加物*を不使用に。シンプルで、力強い処方を貫いています。</p>
+                            <p class="quality-note">＊保存料、着色料（酸化チタン）、人工甘味料、光沢剤、防腐剤、漂白剤、滑沢剤</p>
+                        </div>
+
+                        <!-- ブロック3: 透明性 -->
+                        <div class="quality-block vertical-text">
+                            <h3 class="quality-sub-catch">透明性のある品質管理</h3>
+                            <p class="quality-description">原料から製品まで、厳しい自社検査に加えて第三者機関による重金属検査も実施。すべての基準をクリアした、安全性が証明された製品だけをお届けします。</p>
+                        </div>
+                    </div>
+
+                    <!-- キャッチコピー（縦書き） - 一番右に配置 -->
+                    <h2 class="quality-main-catch vertical-text">
+                        ただ、<br>まっすぐに良いものを。
+                    </h2>
+                </div>
+            </section>
+
+            <!-- FAQ Accordion Section -->
+            <section id="faq" class="faq-section">
+                <div class="faq-container">
+                    <h2 class="faq-section-title">FAQ</h2>
+                    <p class="faq-section-subtitle">私たちがよくいただくご質問にお答えします</p>
+
+                    <div class="faq-accordion">
+                        <!-- FAQ Item 1 -->
+                        <div class="faq-item">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">01</span>
+                                <span class="faq-question-text">TSUGIMIの主な成分は何ですか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>TSUGIMIは、5種類の異なるビタミンC誘導体（アスコルビン酸、アスコルビルグルコシド、パルミチン酸アスコルビル、テトラヘキシルデカン酸アスコルビル、アスコルビルエチル）を配合しております。それぞれが異なる浸透速度と作用時間を持ち、お肌に持続的な効果をもたらします。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 2 -->
+                        <div class="faq-item">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">02</span>
+                                <span class="faq-question-text">どのような肌質の方におすすめですか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>TSUGIMIは、すべての肌質の方にお使いいただけます。特に、くすみや色ムラが気になる方、ハリ不足を感じている方、肌のキメを整えたい方におすすめです。敏感肌の方でも安心してお使いいただけるよう、刺激の少ない処方を心がけております。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 3 -->
+                        <div class="faq-item">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">03</span>
+                                <span class="faq-question-text">朝と夜、どちらに使用すべきですか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>朝晩の両方でご使用いただくことをおすすめしております。朝のご使用により、日中のダメージから肌を保護し、夜のご使用により、睡眠中の肌の修復をサポートします。継続的なケアが、より美しい肌へと導きます。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 4 -->
+                        <div class="faq-item">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">04</span>
+                                <span class="faq-question-text">効果を実感するまでにどのくらいかかりますか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>個人差はございますが、多くのお客様が2〜4週間の継続使用で肌の変化を実感されています。肌のターンオーバーサイクルは約28日間ですので、最低でも1ヶ月間は継続してお使いいただくことをおすすめいたします。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 5 -->
+                        <div class="faq-item">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">05</span>
+                                <span class="faq-question-text">他のスキンケア製品と併用できますか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>はい、他のスキンケア製品と併用していただけます。化粧水で肌を整えた後、TSUGIMIを適量お肌になじませ、その後乳液やクリームでしっかりと保湿してください。レチノールなど他の有効成分と併用される場合は、朝晩で使い分けることをおすすめいたします。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 6 (最初は非表示) -->
+                        <div class="faq-item hidden">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">06</span>
+                                <span class="faq-question-text">保管方法について教えてください</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>直射日光や高温多湿を避け、冷暗所に保管してください。開封後は3ヶ月以内を目安にお使いいただくことをおすすめします。冷蔵庫での保管も可能ですが、使用前に常温に戻してからお使いください。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 7 (最初は非表示) -->
+                        <div class="faq-item hidden">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">07</span>
+                                <span class="faq-question-text">妊娠中・授乳中でも使用できますか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>TSUGIMIは安全性の高い成分を使用しておりますが、妊娠中・授乳中はお肌が敏感になりやすい時期です。ご使用前にかかりつけの医師にご相談いただくことをおすすめいたします。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 8 (最初は非表示) -->
+                        <div class="faq-item hidden">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">08</span>
+                                <span class="faq-question-text">返品・交換は可能ですか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>未開封の商品に限り、商品到着後7日以内であれば返品・交換を承ります。お客様都合による返品の場合、返送料はお客様負担となります。商品に不具合があった場合は、弊社負担にて交換させていただきます。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 9 (最初は非表示) -->
+                        <div class="faq-item hidden">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">09</span>
+                                <span class="faq-question-text">定期購入はありますか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>はい、定期購入プランをご用意しております。通常価格より15%オフでお求めいただけ、お届けサイクルも自由に設定できます。いつでも休止・解約が可能ですので、お気軽にご利用ください。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ Item 10 (最初は非表示) -->
+                        <div class="faq-item hidden">
+                            <button class="faq-question" aria-expanded="false">
+                                <span class="faq-number">10</span>
+                                <span class="faq-question-text">海外発送は可能ですか？</span>
+                                <span class="faq-toggle">
+                                    <span class="faq-icon"></span>
+                                </span>
+                            </button>
+                            <div class="faq-answer">
+                                <div class="faq-answer-content">
+                                    <p>現在、海外への発送は一部の国・地域に限定させていただいております。詳細はお問い合わせフォームよりご連絡ください。発送可能な地域や送料につきまして、個別にご案内させていただきます。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- もっと見るボタン -->
+                    <div class="faq-show-more">
+                        <button class="faq-show-more-btn" id="faq-show-more-btn">
+                            <span class="btn-text">もっと見る</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="footer-container">
+            <!-- PC版：3カラムレイアウト / モバイル版：縦積み -->
+            <div class="footer-content">
+                <!-- 左カラム：ブランドロゴ -->
+                <div class="footer-column footer-brand">
+                    <h2 class="footer-logo">TSUGIMI<sup>®</sup></h2>
+                    <p class="footer-tagline">経験は、輝きに変わる。</p>
+                </div>
+
+                <!-- 中央カラム：Quick Links -->
+                <div class="footer-column footer-links">
+                    <h3 class="footer-heading">Quick Links</h3>
+                    <nav class="footer-nav">
+                        <ul class="footer-list">
+                            <li class="footer-item"><a href="#philosophy" class="footer-link">PHILOSOPHY</a></li>
+                            <li class="footer-item"><a href="#matrix" class="footer-link">MATRIX</a></li>
+                            <li class="footer-item"><a href="#quality" class="footer-link">QUALITY</a></li>
+                            <li class="footer-item"><a href="#faq" class="footer-link">FAQ</a></li>
+                        </ul>
+                    </nav>
+                </div>
+
+                <!-- 右カラム：Pages -->
+                <div class="footer-column footer-pages">
+                    <h3 class="footer-heading">Pages</h3>
+                    <nav class="footer-nav">
+                        <ul class="footer-list">
+                            <li class="footer-item"><a href="#" class="footer-link">Home</a></li>
+                            <li class="footer-item"><a href="#about" class="footer-link">About</a></li>
+                            <li class="footer-item"><a href="#contact" class="footer-link">Contact</a></li>
+                            <li class="footer-item"><a href="#privacy" class="footer-link">Privacy Policy</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- フッターボトム：コピーライト + プライバシーポリシー -->
+            <div class="footer-bottom">
+                <p class="footer-copyright">Copyright © 2025 TSUGIMI - All Rights Reserved</p>
+                <a href="#privacy" class="footer-privacy">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

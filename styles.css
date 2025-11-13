@@ -1,0 +1,2451 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+:root {
+    --text-color: #f4f4f4;
+    --bg-color: #141414;
+    --menu-bg: rgba(244, 244, 244, 0.3);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    /* スムーズスクロール */
+    scroll-behavior: smooth;
+    /* タッチデバイス最適化 */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Shippori Mincho B1', serif;
+    background-color: #000000;
+    color: var(--text-color);
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100%;
+    position: relative;
+    /* タッチ最適化 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* タップハイライト削除（カスタムスタイルのため） */
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* ヘッダー */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 4rem;
+    background: transparent;
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.3s ease;
+}
+
+/* スクロール時にヘッダーを隠す */
+.header.hidden {
+    transform: translateY(-100%);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--text-color);
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    z-index: 1002;
+    font-family: 'Josefin Sans', sans-serif;  /* Josefin Sans Regular 400 */
+}
+
+.logo sup {
+    font-size: 0.6em;  /* 0.5em → 0.6em（少し大きく） */
+    font-weight: 300;  /* 細字にする */
+    vertical-align: super;
+    margin-left: 0.05em;
+}
+
+.logo:hover {
+    opacity: 0.7;
+    transform: translateY(-2px);
+}
+
+/* デスクトップナビゲーション */
+.desktop-nav {
+    display: block;
+}
+
+/* ハンバーガーメニューボタン（デフォルトは非表示） */
+.hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 14px 12px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    z-index: 1002;
+}
+
+.hamburger-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.hamburger-line {
+    width: 100%;
+    height: 2px;
+    background: var(--text-color);
+    border-radius: 2px;
+    transition: var(--transition-smooth);
+}
+
+/* モバイルメニューオーバーレイ */
+.mobile-menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(20, 20, 20, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+}
+
+.mobile-menu-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.mobile-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3rem;
+}
+
+.close-btn {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition-smooth);
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: rotate(90deg);
+}
+
+.close-line {
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background: #f4f4f4;
+    border-radius: 2px;
+}
+
+.close-line:first-child {
+    transform: rotate(45deg);
+}
+
+.close-line:last-child {
+    transform: rotate(-45deg);
+}
+
+/* モバイルナビゲーション */
+.mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.mobile-menu-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 4rem;
+}
+
+.mobile-menu-item {
+    opacity: 0;
+    transform: translateX(-30px);
+    animation: slideInLeft 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.mobile-menu-overlay.active .mobile-menu-item:nth-child(1) { animation-delay: 0.1s; }
+.mobile-menu-overlay.active .mobile-menu-item:nth-child(2) { animation-delay: 0.2s; }
+.mobile-menu-overlay.active .mobile-menu-item:nth-child(3) { animation-delay: 0.3s; }
+.mobile-menu-overlay.active .mobile-menu-item:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes slideInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.mobile-menu-link {
+    text-decoration: none;
+    color: #f4f4f4;
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-family: 'Josefin Sans', sans-serif;  /* Josefin Sans */
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: var(--transition-smooth);
+    display: inline-block;
+    position: relative;
+}
+
+.mobile-menu-link:hover {
+    color: #ffffff;
+    transform: translateX(10px);
+    text-shadow: 0 0 20px rgba(100, 150, 200, 0.8),
+                 0 0 40px rgba(100, 150, 200, 0.5),
+                 0 0 60px rgba(100, 150, 200, 0.3);
+}
+
+.mobile-menu-link:active {
+    text-shadow: 0 0 30px rgba(100, 150, 255, 1),
+                 0 0 60px rgba(100, 150, 255, 0.8),
+                 0 0 90px rgba(100, 150, 255, 0.6);
+}
+
+/* ナビゲーション - ピル型コンテナ */
+.nav {
+    position: relative;
+}
+
+.nav-pill {
+    background: var(--menu-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 50px;
+    padding: 0.8rem 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transition: var(--transition-smooth);
+}
+
+.nav-pill:hover {
+    background: rgba(244, 244, 244, 0.35);
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: 2.5rem;
+    margin: 0;
+}
+
+.nav-item {
+    position: relative;
+}
+
+.nav-link {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    font-weight: 400;
+    font-family: 'Josefin Sans', sans-serif;  /* Josefin Sans Regular 400 */
+    letter-spacing: 0.12em;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: var(--transition-smooth);
+}
+
+/* モダンなホバーエフェクト */
+.nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--text-color);
+    transform: translateX(-50%);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 2px;
+}
+
+.nav-link:hover::before {
+    width: 100%;
+}
+
+.nav-link:hover {
+    transform: translateY(-2px);
+    letter-spacing: 0.15em;
+    text-shadow: 0 0 15px rgba(244, 244, 244, 0.3);
+}
+
+/* ヒーローセクション */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.hero-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    z-index: 1;
+    image-rendering: auto;
+    image-rendering: -webkit-optimize-contrast;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+.hero-title {
+    font-size: 5rem;
+    font-weight: 700;
+    font-family: 'Josefin Sans', sans-serif;  /* Josefin Sans */
+    letter-spacing: 0.08em;  /* 0.15em → 0.08em（文字間を狭める） */
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
+}
+
+.hero-title sup {
+    font-size: 0.5em;  /* 0.4em → 0.5em（少し大きく） */
+    font-weight: 300;  /* 細字にする */
+    vertical-align: super;
+    margin-left: 0.05em;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    opacity: 0.95;
+    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* メインコンテンツ */
+.main-content {
+    background-color: #000000;  /* var(--bg-color) → #000000 に変更して帯を削除 */
+    min-height: 100vh;
+    padding: 0 4rem 0 4rem;
+}
+
+.content-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* The Philosophy セクション */
+.philosophy-section {
+    /* .main-contentのpaddingを打ち消して全幅にする */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    padding: 0;
+}
+
+.philosophy-text {
+    text-align: center;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+.philosophy-title {
+    font-size: 3.5rem;
+    font-weight: 700;  /* Bold */
+    font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    margin-bottom: 4rem;
+    position: relative;
+    display: inline-block;
+    transition: var(--transition-smooth);
+}
+
+.philosophy-title::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--text-color), transparent);
+    opacity: 0;
+    transition: var(--transition-smooth);
+}
+
+.philosophy-title:hover::after {
+    opacity: 1;
+    width: 120px;
+}
+
+.philosophy-title:hover {
+    text-shadow: 0 0 30px rgba(244, 244, 244, 0.3);
+    letter-spacing: 0.1em;
+}
+
+.philosophy-description {
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-family: 'Shippori Mincho B1', serif;
+    line-height: 2.2;
+    color: var(--text-color);
+    opacity: 0.9;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 30px;  /* 左右30px余白 */
+    text-align: center;  /* テキストは中央揃え */
+}
+
+.philosophy-images {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    animation: fadeInUp 1.4s ease-out;
+}
+
+.philosophy-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 650px;
+    overflow: hidden;
+    border-radius: 0;
+    transition: var(--transition-smooth);
+}
+
+.philosophy-image-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 1) 5%,
+        rgba(0, 0, 0, 0.98) 10%,
+        rgba(0, 0, 0, 0.95) 15%,
+        rgba(0, 0, 0, 0.9) 20%,
+        rgba(0, 0, 0, 0.8) 30%,
+        rgba(0, 0, 0, 0.6) 45%,
+        rgba(0, 0, 0, 0.4) 60%,
+        rgba(0, 0, 0, 0.2) 75%,
+        rgba(0, 0, 0, 0.1) 90%,
+        rgba(0, 0, 0, 0) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+    transition: var(--transition-smooth);
+}
+
+.philosophy-image-wrapper:hover::before {
+    opacity: 0.7;
+}
+
+.philosophy-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: var(--transition-smooth);
+}
+
+/* 画像ズーム効果を除外
+.philosophy-image-wrapper:hover .philosophy-img {
+    transform: scale(1.03);
+}
+*/
+
+/* Golden Lattice Matrix セクション */
+.golden-lattice-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 0;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+}
+
+.golden-lattice-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.golden-lattice-bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
+
+.golden-lattice-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 4rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeInUp 1.2s ease-out;
+}
+
+.golden-lattice-title {
+    font-size: 3.5rem;
+    font-weight: 700;  /* Bold */
+    font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    letter-spacing: 0.08em;
+    color: var(--text-color);
+    margin-bottom: 4rem;
+    position: relative;
+    display: inline-block;
+}
+
+/* PC版では改行を非表示 */
+.golden-lattice-title .mobile-br {
+    display: none;
+}
+
+/* モバイル版のみ：Golden Lattice文字アニメーション */
+@media (max-width: 767px) {
+    /* モバイル版では改行を表示 */
+    .golden-lattice-title .mobile-br {
+        display: block;
+    }
+
+    .golden-lattice-title {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+        letter-spacing: 0.02em;
+    }
+
+    .golden-lattice-description {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    /* 画面に映ったときにアニメーション開始 */
+    .golden-lattice-section.visible .golden-lattice-title {
+        animation: luxuryTitleEntrance 1.8s cubic-bezier(0.19, 1, 0.22, 1) 0.5s forwards;
+    }
+
+    .golden-lattice-section.visible .golden-lattice-description {
+        animation: fadeInUpDesc 1.0s ease-out 0.6s forwards;
+    }
+}
+
+@keyframes luxuryTitleEntrance {
+    0% {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+        letter-spacing: 0.02em;
+    }
+    60% {
+        opacity: 0.7;
+        transform: translateY(-5px) scale(1.02);
+        letter-spacing: 0.06em;
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        letter-spacing: 0.08em;
+    }
+}
+
+@keyframes fadeInUpDesc {
+    to {
+        opacity: 0.9;
+        transform: translateY(0);
+    }
+}
+
+.golden-lattice-title sup {
+    font-size: 0.4em;
+    vertical-align: super;
+    margin-left: 0.1em;
+}
+
+.golden-lattice-description {
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-family: 'Shippori Mincho B1', serif;
+    line-height: 2.2;
+    color: var(--text-color);
+    opacity: 0.9;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 30px;  /* 左右30px余白 */
+    text-align: center;  /* テキストは中央揃え */
+}
+
+/* ============================================
+   Hero Sections - Luxury Brand Full-Width Layout
+   Left Image, Right Text Overlay (Transparent)
+   ============================================ */
+
+/* CSS Custom Properties */
+:root {
+    --hero-height-desktop: 700px;
+    --hero-height-tablet: 600px;
+    --hero-height-mobile: 500px;
+    --hero-gold: #d4af37;
+}
+
+/* Base Section Styles */
+.hero-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    height: var(--hero-height-desktop);
+    overflow: hidden;
+    margin-top: 0;
+    opacity: 0;  /* 初期状態で非表示 */
+    transition: opacity 0.8s ease-out;  /* フェードインアニメーション */
+}
+
+/* Visible state - triggered by Intersection Observer */
+.hero-section.visible {
+    opacity: 1;  /* スクロール時に表示 */
+}
+
+/* Picture Element */
+.hero-section picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Image Styles with Ken Burns Effect */
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center left;
+    display: block;
+    animation: kenBurnsZoom 15s ease-out forwards;
+}
+
+/* Ken Burns Effect - Subtle Zoom */
+@keyframes kenBurnsZoom {
+    from {
+        transform: scale(1.05);
+    }
+    to {
+        transform: scale(1.0);
+    }
+}
+
+/* Text Overlay Container - Desktop (Right Side by default) */
+.hero-section .hero-text-overlay {
+    position: absolute;
+    right: 10%;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 600px;
+    text-align: left;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 1.2s ease-out;
+}
+
+/* Left Side Text for Section 2 */
+.hero-section.hero-left .hero-text-overlay {
+    right: auto;
+    left: 10%;
+}
+
+/* Visible State (Triggered by Intersection Observer) */
+.hero-section .hero-text-overlay.visible {
+    opacity: 1;
+}
+
+/* Mobile Line Break Control */
+.mobile-only {
+    display: none;
+}
+
+/* Subtitle - "PURE BEAUTY" */
+.hero-section .hero-subtitle {
+    display: block;
+    font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    font-size: 11px;
+    font-weight: 700;  /* Bold */
+    text-transform: uppercase;
+    color: var(--hero-gold);
+    letter-spacing: 0.25em;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s;
+}
+
+.hero-section .hero-text-overlay.visible .hero-subtitle {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Main Title - "清らかな、始まりの予感。" */
+.hero-section .hero-title {
+    font-family: 'Noto Serif JP', 'Yu Mincho', 'Shippori Mincho B1', serif;
+    font-size: 52px;
+    font-weight: 400;
+    color: #ffffff;
+    letter-spacing: 0.06em;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    text-shadow: 2px 4px 12px rgba(0, 0, 0, 0.7);
+    white-space: nowrap; /* PC: 1行表示必須 */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s,
+                transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s;
+}
+
+.hero-section .hero-text-overlay.visible .hero-title {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Description Text */
+.hero-section .hero-description {
+    font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    font-size: 16px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 2.0;
+    letter-spacing: 0.03em;
+    margin: 0;
+    max-width: 500px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.8s ease-out 0.7s, transform 0.8s ease-out 0.7s;
+}
+
+.hero-section .hero-text-overlay.visible .hero-description {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============================================
+   Hero Content Group - 縦書き+横書き混在レイアウト
+   (image02専用)
+   ============================================ */
+
+/* コンテンツグループ全体（Flexboxコンテナ） */
+.hero-section .hero-content-group {
+    position: absolute;
+    right: 100px;               /* 固定マージン100px */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+
+    display: flex;
+    flex-direction: row;        /* 横並び */
+    align-items: flex-start;    /* 上揃え */
+    gap: 50px;                  /* 要素間隔50px */
+
+    opacity: 0;
+    transition: opacity 1.2s ease-out;
+}
+
+.hero-section .hero-content-group.visible {
+    opacity: 1;
+}
+
+/* 横書きエリア（左側） */
+.horizontal-text-area {
+    writing-mode: horizontal-tb;
+    max-width: 550px;
+    text-align: left;
+}
+
+/* 日本語説明文 */
+.description-jp {
+    font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    font-size: 15px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 2.0;
+    letter-spacing: 0.03em;
+    margin: 0 0 1.5rem 0;
+    text-align: left;  /* テキストは左揃え */
+
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out 0.2s,
+                transform 0.8s ease-out 0.2s;
+}
+
+.hero-section .hero-content-group.visible .description-jp {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 英語説明文 */
+.description-en {
+    font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(255, 255, 255, 0.75);
+    line-height: 1.9;
+    letter-spacing: 0.02em;
+    margin: 0;
+
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out 0.4s,
+                transform 0.8s ease-out 0.4s;
+}
+
+.hero-section .hero-content-group.visible .description-en {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 縦書きキャッチコピー（右側） */
+.vertical-title {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+
+    font-family: 'Noto Serif JP', 'Yu Mincho', 'Shippori Mincho B1', serif;
+    font-size: 42px;
+    font-weight: 400;
+    color: #ffffff;
+    letter-spacing: 0.2em;
+    line-height: 1.8;
+    margin: 0;
+
+    text-shadow: 2px 4px 12px rgba(0, 0, 0, 0.7);
+
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s,
+                transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.6s;
+}
+
+/* image04専用：PC版のみ黒文字＋影なし（高級感向上） */
+@media (min-width: 768px) {
+    .hero-section-image04 .vertical-title {
+        color: #000000;
+        text-shadow: none;
+    }
+
+    .hero-section-image04 .description-jp {
+        color: rgba(0, 0, 0, 0.85);
+    }
+
+    .hero-section-image04 .description-en {
+        color: rgba(0, 0, 0, 0.75);
+    }
+}
+
+.hero-section .hero-content-group.visible .vertical-title {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============================================
+   Hero Content Group - 左寄せバリエーション
+   (image03専用)
+   ============================================ */
+
+/* 左寄せコンテンツグループ */
+.hero-section .hero-content-group.hero-content-left {
+    right: auto;
+    left: 100px;  /* 左端から100px */
+}
+
+/* 縦書きエリア（サブタイトル + キャッチコピー） */
+.vertical-area {
+    display: flex;
+    flex-direction: row;  /* 縦書きなので横方向に並べる */
+    align-items: flex-start;
+    gap: 15px;  /* サブタイトルとキャッチコピーの間隔 */
+}
+
+/* 縦書きサブタイトル */
+.vertical-subtitle {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+
+    font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    font-size: 10px;
+    font-weight: 700;  /* Bold */
+    text-transform: uppercase;
+    color: #d4af37;  /* ゴールド */
+    letter-spacing: 0.3em;
+
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out 0.5s,
+                transform 0.8s ease-out 0.5s;
+}
+
+.hero-section .hero-content-group.visible .vertical-subtitle {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ============================================
+   Hero Sections - Responsive Design
+   ============================================ */
+
+/* Tablet - 1024px以下 */
+@media (max-width: 1024px) {
+    .hero-section {
+        height: var(--hero-height-tablet);
+    }
+
+    .hero-section .hero-text-overlay {
+        right: 8%;
+        max-width: 520px;
+    }
+
+    .hero-section.hero-left .hero-text-overlay {
+        left: 8%;
+        right: auto;
+    }
+
+    .hero-section .hero-title {
+        font-size: 44px;
+    }
+
+    .hero-section .hero-description {
+        font-size: 15px;
+        line-height: 1.95;
+    }
+
+    /* Hero Content Group - タブレット対応 */
+    .hero-section .hero-content-group {
+        right: 60px;
+        gap: 30px;
+    }
+
+    .horizontal-text-area {
+        max-width: 450px;
+    }
+
+    .vertical-title {
+        font-size: 36px;
+    }
+
+    .description-jp {
+        font-size: 14px;
+    }
+
+    .description-en {
+        font-size: 13px;
+    }
+
+    /* 左寄せバリエーション（タブレット） */
+    .hero-section .hero-content-group.hero-content-left {
+        left: 60px;  /* 左端から60px */
+    }
+
+    .vertical-subtitle {
+        font-size: 9px;
+    }
+}
+
+/* Mobile - 767px以下 */
+@media (max-width: 767px) {
+    .hero-section {
+        height: auto;  /* 固定高さを解除 */
+        display: flex;
+        flex-direction: column;  /* 縦積みレイアウト */
+        background-color: #000000;  /* 黒背景（白い帯を防ぐ） */
+    }
+
+    /* テキストを下部中央に配置 */
+    .hero-section .hero-text-overlay,
+    .hero-section.hero-left .hero-text-overlay {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        right: auto;
+        top: auto;
+        transform: translateX(-50%);
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    /* モバイルで改行を有効化 */
+    .mobile-only {
+        display: inline;
+    }
+
+    /* タイトルの改行設定を解除 */
+    .hero-section .hero-title {
+        white-space: normal; /* モバイル: 2行表示 */
+        font-size: 32px;
+        line-height: 1.8;
+    }
+
+    .hero-section .hero-subtitle {
+        font-size: 10px;
+        letter-spacing: 0.22em;
+    }
+
+    .hero-section .hero-description {
+        font-size: 14px;
+        line-height: 1.9;
+        max-width: 100%;
+    }
+
+    /* Hero Content Group - モバイル対応 */
+    .hero-section .hero-content-group {
+        position: static;  /* 絶対配置を解除 */
+        flex-direction: column;  /* 縦積み */
+        align-items: center;  /* 横方向中央揃え */
+        justify-content: center;  /* 縦方向中央揃え */
+        gap: 25px;  /* キャッチコピーと説明文の間隔 */
+        width: 100%;
+        max-width: 100%;
+        height: auto;  /* コンテンツに合わせて自動調整 */
+        padding: 100px 30px;  /* 上下100px、左右30px（中央配置） */
+        background-color: #000000;  /* 背景色（黒） */
+        order: 1;  /* テキストを後に表示（画像→テキスト） */
+        margin: 0;
+        margin-bottom: 0;  /* 念のため明示的に設定 */
+        transform: none;
+    }
+
+    /* 横書きエリア（下に配置） */
+    .horizontal-text-area {
+        order: 2;  /* 2番目（下）に配置 */
+        max-width: 100%;
+        text-align: left;  /* 左揃え */
+        width: 100%;
+    }
+
+    /* 縦書きタイトル（上に配置） - image02用 */
+    .vertical-title {
+        order: 1;  /* 1番目（上）に配置 */
+        writing-mode: vertical-rl;  /* 縦書きを維持 */
+        text-orientation: upright;
+        font-size: 28px;  /* 26px → 28px（読みやすさ向上） */
+        margin: 0;  /* gapで間隔を制御 */
+        color: #ffffff;  /* 白色テキスト */
+        text-shadow: none;  /* テキストシャドウを削除 */
+    }
+
+    .description-jp {
+        font-size: 15px;  /* 14px → 15px（読みやすさ向上） */
+        line-height: 1.9;
+        margin: 0;  /* 英語説明文非表示のため下マージン削除 */
+        color: rgba(255, 255, 255, 0.9);  /* 白色テキスト */
+    }
+
+    .description-en {
+        display: none;  /* モバイルでは英語説明文を非表示 */
+    }
+
+    /* 左寄せバリエーション（モバイル） */
+    .hero-section .hero-content-group.hero-content-left {
+        /* モバイルでは左右の区別なし */
+        position: static;
+        height: auto;  /* コンテンツに合わせて自動調整 */
+        background-color: #000000;  /* 背景色統一 */
+        padding: 100px 30px;  /* 上下100px、左右30px（中央配置） */
+    }
+
+    /* 縦書きエリア（上に配置） - image03/04用 */
+    .vertical-area {
+        order: 1;  /* 1番目（上）に配置 */
+        flex-direction: column;  /* サブタイトルとキャッチを縦積み */
+        align-items: flex-start;  /* 内部要素は上端揃え */
+        gap: 32px;  /* サブタイトルとキャッチコピーの間隔（30-35pxの中間） */
+        margin: 0;  /* 上下パディングで制御 */
+    }
+
+    /* 縦書きサブタイトル */
+    .vertical-subtitle {
+        writing-mode: horizontal-tb;  /* 横書き */
+        text-orientation: mixed;
+        font-size: 9px;
+        font-weight: 700;  /* Bold */
+        letter-spacing: 0.25em;
+        color: #d4af37;  /* ゴールド色を維持 */
+        font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    }
+
+    /* 縦書きエリア内のタイトルも縦書き維持 */
+    .vertical-area .vertical-title {
+        writing-mode: vertical-rl;  /* 縦書きを維持 */
+        text-orientation: upright;
+        font-size: 28px;  /* 26px → 28px（読みやすさ向上） */
+        margin: 0;
+        color: #ffffff;  /* 白色テキスト */
+        text-shadow: none;  /* テキストシャドウを削除 */
+    }
+
+    /* 画像を独立ブロックとして配置 */
+    .hero-section picture {
+        order: 0;  /* 画像を最初に表示（画像→テキスト） */
+        width: 100%;
+        height: 600px;  /* 固定高さ */
+        margin: 0;  /* 念のため明示的に設定 */
+        margin-top: 0;  /* 念のため明示的に設定 */
+        padding: 0;  /* 念のため明示的に設定 */
+        display: block;  /* インライン要素の隙間を削除 */
+    }
+
+    .hero-section .hero-image {
+        width: 100%;
+        height: 600px;  /* 固定高さ */
+        object-fit: cover;
+        object-position: center;
+        display: block;  /* インライン要素の隙間を削除 */
+        animation: luxuryImageZoom 12s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite alternate;
+    }
+
+    /* 高級ブランド風ズームアニメーション：わかりやすいズームイン→ズームアウト */
+    @keyframes luxuryImageZoom {
+        0% {
+            transform: scale(1);
+            filter: brightness(1);
+        }
+        50% {
+            filter: brightness(1.05);
+        }
+        100% {
+            transform: scale(1.15);
+            filter: brightness(1);
+        }
+    }
+
+    /* image04専用：背景色を設定して白い線を防ぐ */
+    .hero-section-image04 {
+        background-color: #000000;  /* 完全な黒 */
+    }
+}
+
+
+/* アニメーション */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+    .header {
+        padding: 1.5rem 2rem;
+    }
+
+    .nav-pill {
+        padding: 0.7rem 1.5rem;
+    }
+
+    .nav-menu {
+        gap: 2rem;
+    }
+
+    .nav-link {
+        font-size: 0.85rem;
+    }
+
+    .hero-title {
+        font-size: 4rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .philosophy-section {
+        padding: 0;
+    }
+
+    .philosophy-text {
+        margin-top: 5rem;
+        margin-bottom: 5rem;
+    }
+
+    .philosophy-title {
+        font-size: 3.2rem;
+        margin-bottom: 5rem;
+    }
+
+    .philosophy-description {
+        font-size: 1.05rem;
+        line-height: 2.6;
+        padding: 0 30px;
+    }
+
+    .philosophy-image-wrapper {
+        height: 600px;
+    }
+
+    .golden-lattice-section {
+        min-height: 90vh;
+        margin-top: 0;
+    }
+
+    .golden-lattice-content {
+        padding: 0;
+    }
+
+    .golden-lattice-title {
+        font-size: 3.2rem;  /* The Philosophyと統一 */
+    }
+
+    .golden-lattice-description {
+        font-size: 1.05rem;
+        line-height: 2.4;
+        padding: 0 30px;
+    }
+
+    .scroll-effect-section {
+        height: 150vh;
+    }
+
+    .scroll-effect-text {
+        width: 85%;
+    }
+
+    .scroll-effect-catchcopy {
+        font-size: 2.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .scroll-effect-description {
+        font-size: 1.05rem;
+        line-height: 2.2;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 1.5rem;
+    }
+
+    .logo {
+        font-size: 1.3rem;
+        color: var(--text-color);
+    }
+
+    /* デスクトップナビを非表示 */
+    .desktop-nav {
+        display: none;
+    }
+
+    /* ハンバーガーメニューを表示 */
+    .hamburger-btn {
+        display: flex;
+    }
+
+    /* モバイルメニューオーバーレイのロゴ色 */
+    .mobile-menu-overlay .logo {
+        color: #f4f4f4;
+    }
+
+    .hero-title {
+        font-size: 3rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .main-content {
+        padding: 0 2rem 0 2rem;  /* padding-bottomを0に変更して帯を削除 */
+    }
+
+    .philosophy-section {
+        padding: 0;
+        padding-top: 5rem;  /* 上部の黒いスペース（8rem→5rem） */
+    }
+
+    .philosophy-text {
+        margin-top: 4rem;
+        margin-bottom: 4rem;
+    }
+
+    .philosophy-title {
+        font-size: 2.2rem;
+        margin-bottom: 4rem;
+        letter-spacing: 0.08em;
+    }
+
+    .philosophy-title::before {
+        top: -2rem;
+        width: 30px;
+    }
+
+    .philosophy-title::after {
+        bottom: -1.5rem;
+        width: 60px;
+    }
+
+    .philosophy-description {
+        font-size: 0.95rem;
+        line-height: 2.4;
+        padding: 0 30px;
+    }
+
+    .philosophy-description::before,
+    .philosophy-description::after {
+        font-size: 2rem;
+    }
+
+    .philosophy-description br {
+        display: none;
+    }
+
+    .philosophy-image-wrapper {
+        height: 500px;
+    }
+
+    .golden-lattice-section {
+        min-height: 80vh;
+        margin-top: 0;
+    }
+
+    .golden-lattice-content {
+        padding: 0;
+    }
+
+    .golden-lattice-title {
+        font-size: 2.2rem;  /* 2.5rem → 2.2rem（The Philosophyと統一） */
+        margin-bottom: 3rem;
+    }
+
+    .golden-lattice-description {
+        font-size: 1rem;
+        line-height: 2.2;
+        padding: 0 30px;
+    }
+
+    .golden-lattice-description br {
+        display: none;
+    }
+
+    .scroll-effect-section {
+        height: 150vh;
+    }
+
+    .scroll-effect-text {
+        width: 90%;
+    }
+
+    .scroll-effect-catchcopy {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        letter-spacing: 0.08em;
+    }
+
+    .scroll-effect-description {
+        font-size: 1rem;
+        line-height: 2.2;
+    }
+
+    .scroll-effect-description br {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 1rem;
+    }
+
+    .logo {
+        font-size: 1.1rem;
+    }
+
+    .hamburger-btn {
+        width: 44px;
+        height: 44px;
+        padding: 12px 10px;
+    }
+
+    .mobile-menu-overlay {
+        padding: 1.5rem 1rem;
+    }
+
+    .mobile-menu-link {
+        font-size: 1rem;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .philosophy-section {
+        padding: 0;
+        padding-top: 4rem;  /* 上部の黒いスペース（6rem→4rem） */
+    }
+
+    .philosophy-text {
+        margin-top: 2.5rem;
+    }
+
+    .philosophy-title {
+        font-size: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .philosophy-description {
+        font-size: 0.95rem;
+        line-height: 1.9;
+        padding: 0 30px;
+    }
+
+    .philosophy-images {
+        gap: 2.5rem;
+    }
+
+    .philosophy-image-wrapper {
+        height: 380px;
+    }
+
+    .golden-lattice-section {
+        min-height: 70vh;
+        margin-top: 0;
+    }
+
+    .golden-lattice-content {
+        padding: 0;
+    }
+
+    .golden-lattice-title {
+        font-size: 2rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .golden-lattice-description {
+        font-size: 0.95rem;
+        line-height: 2;
+        padding: 0 30px;
+    }
+
+    .golden-lattice-description br {
+        display: none;
+    }
+
+    .scroll-effect-section {
+        height: 150vh;
+    }
+
+    .scroll-effect-text {
+        width: 95%;
+    }
+
+    .scroll-effect-catchcopy {
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.05em;
+    }
+
+    .scroll-effect-description {
+        font-size: 0.9rem;
+        line-height: 2;
+    }
+
+    .scroll-effect-description br {
+        display: none;
+    }
+}
+
+
+/* ============================================
+   FAQ Accordion Section - Luxury Brand Style
+   ============================================ */
+
+.faq-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    background-color: #1a1a1a;
+    padding: 4rem 2rem 3rem;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.faq-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.faq-section-title {
+    font-size: 3.5rem;
+    font-weight: 700;  /* Bold */
+    font-family: 'Shippori Mincho B1', serif;  /* Shippori Mincho */
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    text-align: center;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+}
+
+.faq-section-subtitle {
+    font-size: 1rem;
+    font-weight: 300;
+    font-family: 'Shippori Mincho B1', serif;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.faq-accordion {
+    width: 100%;
+}
+
+.faq-item {
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+.faq-question {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding: 2.5rem 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.3s ease;
+}
+
+.faq-question:hover {
+    opacity: 0.8;
+}
+
+.faq-number {
+    font-size: 1.2rem;
+    font-weight: 300;
+    font-family: 'Cochin', 'Georgia', 'Times New Roman', serif;
+    color: #b3b3b3;
+    letter-spacing: 0.1em;
+    min-width: 3rem;
+}
+
+.faq-question-text {
+    flex: 1;
+    font-size: 1.15rem;
+    font-weight: 400;
+    font-family: 'Shippori Mincho B1', serif;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+}
+
+.faq-toggle {
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.15);  /* 薄いボーダー、高級感 */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.02);  /* 非常に薄い背景 */
+}
+
+.faq-question:hover .faq-toggle {
+    border-color: rgba(255, 255, 255, 0.3);  /* ホバー時少し濃く */
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: rotate(90deg);
+}
+
+.faq-icon {
+    position: relative;
+    width: 14px;  /* 16px → 14px (少し小さく) */
+    height: 14px;
+}
+
+.faq-icon::before,
+.faq-icon::after {
+    content: '';
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.4);  /* 薄い色 */
+    transition: all 0.3s ease;
+}
+
+.faq-icon::before {
+    width: 14px;  /* 16px → 14px */
+    height: 1px;  /* 2px → 1px (細く) */
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.faq-icon::after {
+    width: 1px;  /* 2px → 1px (細く) */
+    height: 14px;  /* 16px → 14px */
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.faq-question[aria-expanded="true"] .faq-icon::after {
+    opacity: 0;
+    transform: translateX(-50%) rotate(90deg);
+}
+
+.faq-question[aria-expanded="true"] .faq-toggle {
+    background-color: rgba(255, 255, 255, 0.08);  /* 展開時も薄く */
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+    opacity: 0;
+}
+
+.faq-answer.active {
+    opacity: 1;
+}
+
+.faq-answer-content {
+    padding: 0 0 2.5rem 5rem;
+}
+
+.faq-answer-content p {
+    font-size: 0.95rem;
+    font-weight: 300;
+    font-family: 'Shippori Mincho B1', serif;
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 2;
+    letter-spacing: 0.05em;
+    margin: 0;
+}
+
+/* もっと見るボタン */
+.faq-show-more {
+    text-align: center;
+    margin-top: 2.5rem;  /* 4rem → 2.5rem に縮小 */
+    margin-bottom: 2.5rem;  /* 4rem → 2.5rem に縮小 */
+    padding-top: 1.5rem;  /* 3rem → 1.5rem に縮小 */
+    padding-bottom: 1.5rem;  /* 3rem → 1.5rem に縮小 */
+}
+
+.faq-show-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 3rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+    font-weight: 400;
+    font-family: 'Shippori Mincho B1', serif;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.faq-show-more-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.faq-show-more-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.faq-show-more-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    letter-spacing: 0.15em;
+}
+
+.faq-show-more-btn .btn-text {
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s ease;
+}
+
+/* 非表示のFAQ項目 - スムーズなアニメーション */
+.faq-item {
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), max-height 0.6s ease;
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 500px;
+    overflow: hidden;
+}
+
+.faq-item.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    max-height: 0;
+    margin: 0;
+    pointer-events: none;
+}
+
+/* 順番に表示されるアニメーション */
+.faq-item:nth-child(6) { transition-delay: 0.05s; }
+.faq-item:nth-child(7) { transition-delay: 0.1s; }
+.faq-item:nth-child(8) { transition-delay: 0.15s; }
+.faq-item:nth-child(9) { transition-delay: 0.2s; }
+.faq-item:nth-child(10) { transition-delay: 0.25s; }
+
+/* Tablet Styles */
+@media (max-width: 1024px) {
+    .faq-section {
+        padding: 3rem 2rem;
+    }
+
+    .faq-section-title {
+        font-size: 3rem;
+    }
+
+    .faq-question {
+        gap: 1.5rem;
+        padding: 2rem 0;
+    }
+
+    .faq-question-text {
+        font-size: 1.05rem;
+    }
+
+    .faq-answer-content {
+        padding: 0 0 2rem 4.5rem;
+    }
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .faq-section {
+        padding: 6rem 1.5rem 2.5rem 1.5rem;  /* 上部パディングを2.5rem → 6rem (2.4倍) */
+    }
+
+    .faq-section-title {
+        font-size: 2.5rem;
+    }
+
+    .faq-section-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 3rem;
+    }
+
+    .faq-question {
+        gap: 1rem;
+        padding: 1.5rem 0;
+    }
+
+    .faq-number {
+        font-size: 1rem;
+        min-width: 2.5rem;
+    }
+
+    .faq-question-text {
+        font-size: 1rem;
+    }
+
+    .faq-toggle {
+        width: 40px;
+        height: 40px;
+    }
+
+    .faq-icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .faq-icon::before {
+        width: 14px;
+    }
+
+    .faq-icon::after {
+        height: 14px;
+    }
+
+    .faq-answer-content {
+        padding: 0 0 1.5rem 3.5rem;
+    }
+
+    .faq-answer-content p {
+        font-size: 0.9rem;
+        line-height: 1.9;
+    }
+}
+
+/* Small Mobile Styles */
+@media (max-width: 480px) {
+    .faq-section {
+        padding: 5rem 1rem 2rem 1rem;  /* 上部パディングを2rem → 5rem (2.5倍) */
+    }
+
+    .faq-section-title {
+        font-size: 2rem;
+    }
+
+    .faq-question {
+        gap: 0.75rem;
+        padding: 1.25rem 0;
+    }
+
+    .faq-number {
+        font-size: 0.9rem;
+        min-width: 2rem;
+    }
+
+    .faq-question-text {
+        font-size: 0.9rem;
+    }
+
+    .faq-answer-content {
+        padding: 0 0 1.25rem 2.75rem;
+    }
+
+    .faq-answer-content p {
+        font-size: 0.85rem;
+    }
+}
+
+/* ===============================================
+   フッター（Footer）
+   =============================================== */
+
+.footer {
+    background: #000000;
+    color: #ffffff;
+    padding: 4rem 2rem 2rem;
+    margin-top: 0;
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* フッターコンテンツ（3カラムレイアウト） */
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    margin-bottom: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ブランドカラム */
+.footer-brand {
+    text-align: left;
+}
+
+.footer-logo {
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-family: 'Josefin Sans', sans-serif;  /* Josefin Sans Regular 400 */
+}
+
+.footer-logo sup {
+    font-size: 0.6em;  /* 0.5em → 0.6em（少し大きく） */
+    font-weight: 300;  /* 細字にする */
+    vertical-align: super;
+    margin-left: 0.05em;
+}
+
+.footer-tagline {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: 'Noto Sans JP', sans-serif;
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+}
+
+/* リンクカラム */
+.footer-column {
+    text-align: left;
+}
+
+.footer-heading {
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    font-family: 'Josefin Sans', sans-serif;  /* Josefin Sans Regular 400 */
+    text-transform: uppercase;
+}
+
+.footer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-item {
+    margin-bottom: 0.75rem;
+}
+
+.footer-link {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-decoration: none;
+    font-family: 'Josefin Sans', sans-serif;  /* Josefin Sans Regular 400 */
+    letter-spacing: 0.05em;
+    line-height: 2.2;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.footer-link:hover {
+    color: #ffffff;
+    opacity: 0.9;
+    text-decoration: underline;
+    transform: translateX(5px);
+}
+
+/* フッターボトム */
+.footer-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 2rem;
+}
+
+.footer-copyright {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+    font-family: 'Noto Sans JP', sans-serif;
+    margin: 0;
+}
+
+.footer-privacy {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    font-family: 'Noto Sans JP', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.footer-privacy:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+/* タブレット・PC版レイアウト（769px以上） */
+@media (min-width: 769px) {
+    .footer {
+        padding: 5rem 4rem 2.5rem;
+    }
+
+    /* 3カラムグリッド */
+    .footer-content {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1fr;
+        gap: 4rem;
+        text-align: left;
+    }
+
+    .footer-brand {
+        padding-right: 2rem;
+    }
+
+    .footer-logo {
+        font-size: 2.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .footer-tagline {
+        font-size: 1rem;
+    }
+
+    .footer-heading {
+        font-size: 1.125rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .footer-link {
+        font-size: 1rem;
+    }
+
+    /* フッターボトム：左右配置 */
+    .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 2.5rem;
+    }
+
+    .footer-copyright {
+        text-align: left;
+        font-size: 0.875rem;
+    }
+
+    .footer-privacy {
+        text-align: right;
+        font-size: 0.875rem;
+    }
+}
+
+/* 大型デスクトップ（1200px以上） */
+@media (min-width: 1200px) {
+    .footer {
+        padding: 6rem 5rem 3rem;
+    }
+
+    .footer-content {
+        gap: 5rem;
+    }
+
+    .footer-logo {
+        font-size: 3rem;
+    }
+
+    .footer-tagline {
+        font-size: 1.1rem;
+    }
+}
+
+/* ===============================================
+   Quality Section（品質へのこだわり）- 縦書き
+   =============================================== */
+
+.quality-section {
+    position: relative;
+    width: 100vw;
+    min-height: 100vh;  /* height → min-height: コンテンツに応じて高さが伸びる */
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    max-width: 100vw;
+    overflow: hidden;
+    background-color: #000000;
+}
+
+/* 背景パノラマスクロール */
+.quality-bg-slideshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    overflow: hidden;  /* はみ出し非表示 */
+}
+
+/* パノラマコンテナ（横並び） */
+.quality-panorama {
+    display: flex;
+    flex-direction: row;
+    width: 400vw;  /* 画像4枚分の幅 */
+    height: 100%;
+    animation: panoramaScroll 15s linear infinite;  /* 5秒/枚 × 3枚 = 15秒 */
+    will-change: transform;
+}
+
+.quality-bg-img {
+    width: 100vw;   /* 各画像は画面幅いっぱい */
+    height: 100%;  /* 親要素の高さに合わせる */
+    min-height: 100vh;  /* 最小高さは100vh */
+    object-fit: cover;
+    object-position: center center;
+    filter: brightness(0.65);
+    flex-shrink: 0;  /* 縮小防止 */
+}
+
+/* パノラマ自動スクロールアニメーション */
+@keyframes panoramaScroll {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-300vw);  /* 3枚分左へ移動 */
+    }
+}
+
+/* 背景オーバーレイ（左側を暗く、テキスト視認性向上） */
+.quality-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0.5) 0%,
+        rgba(0, 0, 0, 0.3) 40%,
+        rgba(0, 0, 0, 0.1) 70%,
+        transparent 100%
+    );
+    z-index: 1;
+}
+
+/* コンテンツレイヤー */
+.quality-content {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;  /* 全ての要素を上揃え */
+    min-height: 100vh;  /* height: 100% → min-height: 100vh */
+    padding-left: 100px;
+    padding-right: 150px;
+    padding-top: 80px;  /* 上部余白追加 */
+    padding-bottom: 80px;  /* 下部余白追加 */
+    gap: 80px;
+}
+
+/* 縦書き設定 */
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 0.15em;
+}
+
+/* キャッチコピー（メイン） */
+.quality-main-catch {
+    font-size: 52px;
+    font-weight: 700;
+    font-family: 'Shippori Mincho B1', serif;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.15em;
+    line-height: 2.2;
+    margin: 0;
+    padding-left: 60px;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.quality-section.visible .quality-main-catch {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 3つのコンテンツブロック */
+.quality-blocks {
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+    align-items: flex-start;
+}
+
+.quality-block {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-height: 600px;
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.quality-section.visible .quality-block:nth-child(1) {
+    transition-delay: 0.2s;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.quality-section.visible .quality-block:nth-child(2) {
+    transition-delay: 0.4s;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.quality-section.visible .quality-block:nth-child(3) {
+    transition-delay: 0.6s;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* サブキャッチコピー */
+.quality-sub-catch {
+    font-size: 22px;
+    font-weight: 600;
+    font-family: 'Shippori Mincho B1', serif;
+    color: #ffffff;
+    letter-spacing: 0.1em;
+    line-height: 2.3;
+    margin: 0;
+    opacity: 0.95;
+}
+
+/* 説明文 */
+.quality-description {
+    font-size: 15px;
+    font-weight: 400;
+    font-family: 'Yu Gothic', 'Noto Sans JP', sans-serif;
+    color: #ffffff;
+    letter-spacing: 0.08em;
+    line-height: 2.2;
+    margin: 0;
+    opacity: 0.85;
+}
+
+/* 注釈 */
+.quality-note {
+    font-size: 12px;
+    font-weight: 400;
+    font-family: 'Yu Gothic', 'Noto Sans JP', sans-serif;
+    color: #ffffff;
+    letter-spacing: 0.05em;
+    line-height: 2.0;
+    margin: 0;
+    opacity: 0.7;
+    padding-top: 10px;
+}
+
+/* タブレット（769px - 1023px） */
+@media (min-width: 769px) and (max-width: 1023px) {
+    .quality-content {
+        padding-left: 60px;
+        padding-right: 100px;
+        gap: 60px;
+    }
+
+    .quality-main-catch {
+        font-size: 44px;
+        padding-left: 50px;
+    }
+
+    .quality-blocks {
+        gap: 70px;
+    }
+
+    .quality-block {
+        max-height: 500px;
+        gap: 30px;
+    }
+
+    .quality-sub-catch {
+        font-size: 20px;
+    }
+
+    .quality-description {
+        font-size: 14px;
+    }
+
+    .quality-note {
+        font-size: 11px;
+    }
+}
+
+/* モバイル（〜768px）：横書きに切り替え */
+@media (max-width: 768px) {
+    .quality-section {
+        height: auto;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .quality-content {
+        flex-direction: column;
+        padding: 40px 30px;
+        gap: 50px;
+        align-items: flex-start;
+        justify-content: center;
+        min-height: auto;
+    }
+
+    /* 縦書き→横書き */
+    .vertical-text {
+        writing-mode: horizontal-tb;
+        text-orientation: mixed;
+        letter-spacing: 0.1em;
+    }
+
+    .quality-main-catch {
+        font-size: 32px;
+        font-weight: 700;
+        line-height: 1.8;
+        padding-left: 0;
+        padding-right: 0;
+        margin-bottom: 20px;
+        order: -1; /* モバイルでは最初に表示 */
+    }
+
+    .quality-blocks {
+        flex-direction: column;
+        gap: 40px;
+        width: 100%;
+        height: auto;
+        order: 1;
+    }
+
+    .quality-block {
+        max-height: none;
+        gap: 20px;
+    }
+
+    .quality-sub-catch {
+        font-size: 18px;
+        line-height: 1.8;
+    }
+
+    .quality-description {
+        font-size: 14px;
+        line-height: 1.9;
+    }
+
+    .quality-note {
+        font-size: 11px;
+        line-height: 1.7;
+    }
+
+    /* モバイルではオーバーレイを全体に */
+    .quality-overlay {
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .quality-bg-img {
+        filter: brightness(0.5);
+    }
+}
+
+/* 小型モバイル（〜480px） */
+@media (max-width: 480px) {
+    .quality-content {
+        padding: 30px 20px;
+        gap: 40px;
+    }
+
+    .quality-main-catch {
+        font-size: 28px;
+    }
+
+    .quality-blocks {
+        gap: 35px;
+    }
+
+    .quality-sub-catch {
+        font-size: 16px;
+    }
+
+    .quality-description {
+        font-size: 13px;
+    }
+
+    .quality-note {
+        font-size: 10px;
+    }
+}
+
